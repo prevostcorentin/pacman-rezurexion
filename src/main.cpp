@@ -1,83 +1,143 @@
+#include <cstdlib>
 #include <exception>
 #include <iostream>
+#include <vector>
 
 #include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
+
 #include <Signals/Delegate.h>
 #include <Signals/Signal.h>
 
 
-namespace pr
+#define GAME_TITLE "Pacman Rezurexion"
+
+
+namespace prx
 {
-
-
-	namespace Sig 
+	
+	
+	enum Direction { Down, Left, Right, Up };
+	namespace Sig
 	{
-
-
+		
+		
+		Gallant::Signal0<void> Tick;
 		Gallant::Signal0<void> Quit;
-
-
+		Gallant::Signal1<enum Direction> PlayerMove;
+		
+		
 	}
-
-	struct Spinner
+	
+	struct Player
 	{
-		void run(sf::Event& event) {
-			if(event.type == sf::Event::KeyPressed) {
-				switch(event.key.code) {
-					case sf::Keyboard::Escape:
-						std::cout << "Quitting game" << std::endl;
-						Sig::Quit.Emit();
-					break;
-					default:
-						std::cout << "No behaviour for touch " << event.key.code << std::endl;
-					break;
-				}
-			}
+		Player() {
+			this->texture.loadFromFile("resources/pacman_sprite.bmp");
+			sprite.setTexture(texture);
+		}
+		sf::Texture texture;
+		sf::Sprite sprite;
+	};
+	
+	struct Keyboard
+	{
+		Keyboard() { }
+		void dispatchLastMoves() {
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+				Sig::Quit.Emit();
+			else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+				Sig::PlayerMove.Emit(Direction::Down);
+			else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+				Sig::PlayerMove.Emit(Direction::Left);
+			else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+				Sig::PlayerMove.Emit(Direction::Right);
+			else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+				Sig::PlayerMove.Emit(Direction::Up);
 		}
 	};
-
+	
+	struct CPUSpinner
+	{
+		CPUSpinner(sf::RenderWindow& w) : window(w)
+		{ }
+		void run() {
+			sf::Event event;
+			while(window.pollEvent(event))
+				Sig::Tick.Emit();
+		}
+		sf::Clock clock;
+		sf::RenderWindow& window;
+	};
+	
+	struct Screen
+	{
+		Screen(sf::RenderWindow& w) : window(w) { }
+		void draw() {
+			this->window.clear();
+			//this->window.draw();
+			this->window.display();
+		}
+		sf::RenderWindow& window;
+	};
+	
+	enum GameState { Init, Running, Error, Stopped };
+	
 	struct Game
 	{
 		Game(sf::ContextSettings context) : window(sf::VideoMode(640, 480),
-		                                           "Pacman Rezurexion", 
+		                                           GAME_TITLE,
 		                                           sf::Style::Default,
-		                                           context)
+		                                           context),
+		                                    screen(window),
+		                                    spinner(window)
 		{
+			this->state = Init;
+			Sig::PlayerMove.Connect(this, &Game::move);
 			Sig::Quit.Connect(this, &Game::quit);
-			window.setActive();
+			Sig::Tick.Connect(this, &Game::update);
+			this->window.setActive();
 		}
 		void launch() {
-			while(window.isOpen()) {
-				sf::Event event;
-				while(window.pollEvent(event)) {
-					if(event.type == sf::Event::Closed)
-						Sig::Quit.Emit();
-					else
-						spinner.run(event);
-				}
-			}
+			this->state = Running;
+			while(this->window.isOpen())
+				spinner.run();
+		}
+		void update() {
+			this->keyboard.dispatchLastMoves();
+			this->screen.draw();
 		}
 		void quit() {
+			std::cout << "Quitting game" << std::endl;
 			window.close();
+			std::exit(EXIT_SUCCESS);
 		}
-		Spinner spinner;
-		sf::Window window;
+		void move(enum Direction direction)
+		{
+			std::cout << "player has moved" << std::endl;
+		}
+		enum GameState state;
+		Keyboard keyboard;
+		sf::RenderWindow window;
+		Screen screen;
+		CPUSpinner spinner;
+		Player player;
 	};
-
-
+	
+	
 }
 
 
 int main()
 {
 	sf::ContextSettings context;
-	context.depthBits = 32;
+	context.depthBits = 24;
 	try {
-		pr::Game game(context);
+		prx::Game game(context);
 		game.launch();
 	} catch (std::exception e) {
 		std::cout << "Unexpected exception" << std::endl;
 	}
-
+	
 	return EXIT_SUCCESS;
 }
