@@ -18,4 +18,4 @@ obj/%.o: src/%.cpp
 		-Iextlibs/ -Iextlibs/SFML/include -Iheader
 
 clean:
-	@rm obj/*.o
+	@rm obj/*.
