@@ -17,22 +17,17 @@
 namespace prx
 {
 	
+	namespace Sig {
+		Gallant::Signal0<void> Quit;
+	}
 	
 	enum Direction { Right=0, Left=1, Down=2, Up=3 };
 	
-	namespace Sig
-	{
-		
-		
-		Gallant::Signal0<void> Tick;
-		Gallant::Signal0<void> Quit;
-		Gallant::Signal1<enum Direction> PlayerMove;
-		
-		
-	}
-	
 	struct Point { int x, y; };
-	struct Object 
+	template<typename T> struct object_type {
+		const char* name() { return "undefined"; }
+	};
+	struct Object
 	{
 		Object(const char *sprite_sheet_filepath) {
 			sf::Color color(255, 255, 255, 255);
@@ -43,16 +38,77 @@ namespace prx
 				Sig::Quit.Emit();
 			this->sprite.setTexture(this->texture);
 			this->sprite.setPosition(0, 0);
+			// Resizing by half
+			this->sprite.setScale(sf::Vector2f(0.5, 0.5));
 			this->setFrame(Direction::Right, 0);
 		}
 		void setFrame(enum Direction direction, int n) {
 			this->sprite.setTextureRect(sf::IntRect(n * 32, direction * 32,
 			                                        32, 32));
 		}
+		virtual const char* getType() {
+			return "undefined"; // object_type<Object>::name();
+		}
+
 		sf::Vector2f map_position;
 		sf::Image image;
 		sf::Texture texture;
 		sf::Sprite sprite;
+	};
+	
+	namespace Sig
+	{
+		
+		
+		Gallant::Signal0<void> Tick;
+		Gallant::Signal1<enum Direction> PlayerMove;
+		Gallant::Signal2<Object*, Object*> Collision;
+		
+		
+	}
+	
+	struct Pacman : Object
+	{
+		Pacman() : Object("resources/sprites/pacman.bmp") { }
+		const char* getType() {
+			return "pacman";
+		}
+	};
+	template<> struct object_type<Pacman> {
+		const char* name() { return "pacman"; }
+	};
+	
+	struct Ghost : Object
+	{
+		Ghost() : Object("resources/sprites/ghost.bmp") { }
+		const char* getType() {
+			return "ghost";
+		}
+	};
+	template<> struct object_type<Ghost> {
+		const char* name() { return "ghost"; }
+	};
+	
+	struct Wall : Object
+	{
+		Wall() : Object("resources/sprites/wall.bmp") { }
+		const char* getType() {
+			return "wall";
+		}
+	};
+	template<> struct object_type<Wall> {
+		const char* name() { return "wall"; }
+	};
+
+	struct PacGum : Object
+	{
+		PacGum() : Object("resources/sprites/pac-gum.bmp") { }
+		const char* getType() {
+			return "pac_gum";
+		}
+	};
+	template<> struct object_type<PacGum> {
+		const char *name() { return "pac_gum"; }
 	};
 
 	struct ObjectCollection
@@ -73,21 +129,18 @@ namespace prx
 	struct Map {
 		Map(ObjectCollection& oc) : objects(oc)
 		{ }
-		std::vector<Object*> getCell(sf::Vector2f position) {
+		std::vector<Object*> getCell(int x, int y) {
 			std::vector<Object*> objects_at_position;
 			for(auto o: this->objects.getAllObjects())
 			{
-				if(position == o->map_position)
+				if(x == o->map_position.x and y == o->map_position.y)
 					objects_at_position.push_back(o);
 			}
 			return objects_at_position;
 		}
 		ObjectCollection& objects;
-	};
-	
-	struct Player : Object
-	{
-		Player() : Object("resources/sprites/pacman.bmp") {}
+		const int width = 16;
+		const int height = 16;
 	};
 	
 	struct Keyboard
@@ -113,8 +166,10 @@ namespace prx
 		{ }
 		void run() {
 			sf::Event event;
-			while(window.pollEvent(event))
+			while(window.pollEvent(event)) {
 				Sig::Tick.Emit();
+				sf::sleep(sf::milliseconds(60));
+			}
 		}
 		sf::Clock clock;
 		sf::RenderWindow& window;
@@ -129,13 +184,39 @@ namespace prx
 			this->window.clear();
 			for(auto& o: this->map.objects.getAllObjects())
 			{
-				o->sprite.setPosition(32 * o->map_position.x, 
-				                      32 * o->map_position.y);
+				//std::cout << "Drawing " << o->getType() << " at " << "[" 
+				//   << o->map_position.x << ", " << o->map_position.y << "]" << std::endl;
+				o->sprite.setPosition(16 * o->map_position.x,
+				                      16 * o->map_position.y);
 				this->window.draw(o->sprite);
 			}
 			this->window.display();
 		}
 		sf::RenderWindow& window;
+		Map& map;
+	};
+
+	struct Player {
+		Player() : name("unknown") 
+		{ }
+		Pacman pacman;
+		int score = 0;
+		std::string name;
+	};
+	
+	struct CollisionTracker
+	{
+		CollisionTracker(Map& m) : map(m)
+		{ }
+		void dispatchLastCollisions() {
+			for(int x=0; x < this->map.width; x++) {
+				for(int y=0; y < this->map.height; y++) {
+					std::vector<Object*> objects_at_xy = this->map.getCell(x, y);
+					if(objects_at_xy.size() > 1)
+						Sig::Collision.Emit(objects_at_xy[0], objects_at_xy[1]);
+				}
+			}
+		}
 		Map& map;
 	};
 	
@@ -148,33 +229,75 @@ namespace prx
 		                                           context),
 		                                    map(objects),
 		                                    screen(window, map),
-		                                    spinner(window)
+		                                    spinner(window),
+		                                    collision_tracker(map)
 		{
 			this->state = Init;
-			Sig::PlayerMove.Connect(this, &Game::move);
-			Sig::Quit.Connect(this, &Game::quit);
-			Sig::Tick.Connect(this, &Game::update);
-			this->player.map_position = sf::Vector2f(1, 1);
-			this->objects.add(&this->player);
+			// Connect signals to handlers
+			Sig::Collision.Connect(this, &Game::handleCollision);
+			Sig::PlayerMove.Connect(this, &Game::handlePlayerMove);
+			Sig::Quit.Connect(this, &Game::handleQuit);
+			Sig::Tick.Connect(this, &Game::handleUpdate);
+			// Place objects
+			this->player.pacman.map_position = sf::Vector2f(0, 0);
+			this->pac_gum.map_position = sf::Vector2f(2, 5);
+			this->ghost.map_position = sf::Vector2f(3, 5);
+			this->wall.map_position = sf::Vector2f(4, 5);
+			// Adding it to the collection
+			this->objects.add(&this->player.pacman);
+			this->objects.add(&this->ghost);
+			this->objects.add(&this->wall);
+			this->objects.add(&this->pac_gum);
 			this->window.setActive();
 		}
 		void launch() {
 			this->state = Running;
 			while(this->window.isOpen())
 				spinner.run();
+			std::exit(EXIT_FAILURE);
 		}
-		void update() {
+		void handleCollision(Object* o1, Object* o2) {
+			std::cout << "Collision at [" << o1->map_position.x << ", " << 
+			                                 o1->map_position.y << "] between " <<
+			                                 o1->getType() << " and " <<
+			                                 o2->getType() << std::endl;
+		}
+		void handleUpdate() {
 			this->keyboard.dispatchLastMoves();
+			this->collision_tracker.dispatchLastCollisions();
 			this->screen.draw();
 		}
-		void quit() {
+		void handleQuit() {
 			std::cout << "Quitting game" << std::endl;
 			window.close();
 			std::exit(EXIT_SUCCESS);
 		}
-		void move(enum Direction direction)
+		void handlePlayerMove(enum Direction direction)
 		{
-			std::cout << "player has moved" << std::endl;
+			switch(direction) {
+				case Right:
+					this->player.pacman.map_position =
+					            sf::Vector2f(this->player.pacman.map_position.x + 1,
+					                         this->player.pacman.map_position.y);
+				break;
+				case Left:
+					this->player.pacman.map_position =
+					            sf::Vector2f(this->player.pacman.map_position.x - 1,
+					                         this->player.pacman.map_position.y);
+				break;
+				case Down:
+					this->player.pacman.map_position =
+					            sf::Vector2f(this->player.pacman.map_position.x,
+					                         this->player.pacman.map_position.y + 1);
+				break;
+				case Up:
+					this->player.pacman.map_position =
+					            sf::Vector2f(this->player.pacman.map_position.x,
+					                         this->player.pacman.map_position.y - 1);
+				break;
+			}
+			std::cout << "Player is at [" << this->player.pacman.map_position.x << ", " <<
+			                                 this->player.pacman.map_position.y << "]" << std::endl;
 		}
 		enum GameState state;
 		Keyboard keyboard;
@@ -183,7 +306,11 @@ namespace prx
 		Map map;
 		Screen screen;
 		CPUSpinner spinner;
+		CollisionTracker collision_tracker;
 		Player player;
+		PacGum pac_gum;
+		Wall wall;
+		Ghost ghost;
 	};
 	
 	
