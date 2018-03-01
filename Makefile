@@ -1,5 +1,5 @@
 CXX = mingw32-g++.exe
-CXX_FLAGS = -g -Wall -Wno-unused-local-typedefs -std=c++0x
+CXX_FLAGS = -DDEBUG -g -Wall -Wno-unused-local-typedefs -std=c++0x
 OBJS = $(subst src/, obj/, $(patsubst %.cpp, %.o, $(wildcard src/*.cpp)))
 EXECUTABLE = PacmanRezurexion.exe
 

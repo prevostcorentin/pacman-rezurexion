@@ -46,8 +46,8 @@ namespace prx
 			this->sprite.setTextureRect(sf::IntRect(n * 32, direction * 32,
 			                                        32, 32));
 		}
-		virtual const char* getType() {
-			return "undefined"; // object_type<Object>::name();
+		virtual const std::string getType() {
+			return std::string("undefined"); // object_type<Object>::name();
 		}
 
 		sf::Vector2f map_position;
@@ -62,7 +62,6 @@ namespace prx
 		
 		Gallant::Signal0<void> Tick;
 		Gallant::Signal1<enum Direction> PlayerMove;
-		Gallant::Signal2<Object*, Object*> Collision;
 		
 		
 	}
@@ -70,45 +69,47 @@ namespace prx
 	struct Pacman : Object
 	{
 		Pacman() : Object("resources/sprites/pacman.bmp") { }
-		const char* getType() {
-			return "pacman";
+		const std::string getType() {
+			return std::string("pacman");
 		}
 	};
 	template<> struct object_type<Pacman> {
-		const char* name() { return "pacman"; }
+		const std::string name() { return std::string("pacman"); }
 	};
 	
 	struct Ghost : Object
 	{
 		Ghost() : Object("resources/sprites/ghost.bmp") { }
-		const char* getType() {
-			return "ghost";
+		const std::string getType() {
+			return std::string("ghost");
 		}
 	};
 	template<> struct object_type<Ghost> {
-		const char* name() { return "ghost"; }
+		const std::string name() { return std::string("ghost"); }
 	};
 	
 	struct Wall : Object
 	{
 		Wall() : Object("resources/sprites/wall.bmp") { }
-		const char* getType() {
-			return "wall";
+		const std::string getType() {
+			return std::string("wall");
 		}
 	};
 	template<> struct object_type<Wall> {
-		const char* name() { return "wall"; }
+		const std::string name() {
+			return std::string("wall");
+		}
 	};
 
 	struct PacGum : Object
 	{
 		PacGum() : Object("resources/sprites/pac-gum.bmp") { }
-		const char* getType() {
-			return "pac_gum";
+		const std::string getType() {
+			return std::string("pac_gum");
 		}
 	};
 	template<> struct object_type<PacGum> {
-		const char *name() { return "pac_gum"; }
+		const std::string name() { return std::string("pac_gum"); }
 	};
 
 	struct ObjectCollection
@@ -123,18 +124,56 @@ namespace prx
 		std::vector<Object*> getAllObjects() {
 			return this->objects;
 		}
+		const size_t count() {
+			return this->objects.size();
+		}
+		bool hasObjectOfType(std::string _typename) {
+			return std::find_if(this->objects.begin(), this->objects.end(),
+			                    [_typename](Object *o) {
+			                       return o->getType() == _typename;
+			                    }) != this->objects.end();
+		}
+		std::vector<Object*> getObjectsOfType(std::string _typename) {
+			std::vector<Object*> objects_of_type;
+			std::vector<Object*>::iterator object_position = this->objects.begin();
+			while((object_position = std::find_if(object_position, this->objects.end(),
+			       [_typename](Object *o) {
+			          return o->getType() == _typename;
+			       })) != this->objects.end())
+			{
+				objects_of_type.push_back(*object_position);
+				object_position++;
+			}
+			return objects_of_type;
+		}
+		void erase(Object *o) {
+			const std::vector<Object*>::iterator object_position =
+			   std::find(this->objects.begin(), this->objects.end(), o);
+			if(object_position != this->objects.end())
+				this->objects.erase(object_position);
+			else
+				std::cout << "Object does not exist" << std::endl;
+		}
 		std::vector<Object*> objects;
 	};
+	
+	namespace Sig
+	{
+		
+		
+		Gallant::Signal1<ObjectCollection&> Collision;
+		
+		
+	}
 	
 	struct Map {
 		Map(ObjectCollection& oc) : objects(oc)
 		{ }
-		std::vector<Object*> getCell(int x, int y) {
-			std::vector<Object*> objects_at_position;
-			for(auto o: this->objects.getAllObjects())
-			{
+		ObjectCollection getCell(int x, int y) {
+			ObjectCollection objects_at_position;
+			for(auto o: this->objects.getAllObjects()) {
 				if(x == o->map_position.x and y == o->map_position.y)
-					objects_at_position.push_back(o);
+					objects_at_position.add(o);
 			}
 			return objects_at_position;
 		}
@@ -184,8 +223,6 @@ namespace prx
 			this->window.clear();
 			for(auto& o: this->map.objects.getAllObjects())
 			{
-				//std::cout << "Drawing " << o->getType() << " at " << "[" 
-				//   << o->map_position.x << ", " << o->map_position.y << "]" << std::endl;
 				o->sprite.setPosition(16 * o->map_position.x,
 				                      16 * o->map_position.y);
 				this->window.draw(o->sprite);
@@ -196,7 +233,8 @@ namespace prx
 		Map& map;
 	};
 
-	struct Player {
+	struct Player
+	{
 		Player() : name("unknown") 
 		{ }
 		Pacman pacman;
@@ -211,11 +249,18 @@ namespace prx
 		void dispatchLastCollisions() {
 			for(int x=0; x < this->map.width; x++) {
 				for(int y=0; y < this->map.height; y++) {
-					std::vector<Object*> objects_at_xy = this->map.getCell(x, y);
-					if(objects_at_xy.size() > 1)
-						Sig::Collision.Emit(objects_at_xy[0], objects_at_xy[1]);
+					ObjectCollection objects_at_xy = this->map.getCell(x, y);
+					if(objects_at_xy.count() > 1)
+						Sig::Collision.Emit(objects_at_xy);
 				}
 			}
+		}
+		bool objectCanMoveTo(Object *o, const sf::Vector2f& position) {
+			ObjectCollection objects_on_cell = this->map.getCell(position.x, position.y);
+			if(objects_on_cell.hasObjectOfType("wall"))
+				return false;
+			else
+				return true;
 		}
 		Map& map;
 	};
@@ -256,11 +301,25 @@ namespace prx
 				spinner.run();
 			std::exit(EXIT_FAILURE);
 		}
-		void handleCollision(Object* o1, Object* o2) {
-			std::cout << "Collision at [" << o1->map_position.x << ", " << 
-			                                 o1->map_position.y << "] between " <<
-			                                 o1->getType() << " and " <<
-			                                 o2->getType() << std::endl;
+		void handleCollision(ObjectCollection& objects) {
+			#ifdef DEBUG
+			std::cout << "Collision: " << std::endl;
+			for(auto& o: objects.getAllObjects())
+				std::cout << "\t" << o->getType();
+			std::cout << std::endl;
+			#endif
+			if(objects.hasObjectOfType("pacman")) {
+				if(objects.hasObjectOfType("pac_gum")) {
+					for(auto& gum: objects.getObjectsOfType("pac_gum")) {
+						this->player.score++;
+						this->objects.erase(gum);
+					}
+				} else if(objects.hasObjectOfType("ghost")) {
+					std::cout << "Player dies with score of " << this->player.score << std::endl;
+					this->objects.erase(&this->player.pacman);
+					Sig::Quit.Emit();
+				}
+			}
 		}
 		void handleUpdate() {
 			this->keyboard.dispatchLastMoves();
@@ -274,30 +333,30 @@ namespace prx
 		}
 		void handlePlayerMove(enum Direction direction)
 		{
+			sf::Vector2f new_position;
 			switch(direction) {
 				case Right:
-					this->player.pacman.map_position =
-					            sf::Vector2f(this->player.pacman.map_position.x + 1,
-					                         this->player.pacman.map_position.y);
+					new_position = sf::Vector2f(this->player.pacman.map_position.x + 1,
+					                            this->player.pacman.map_position.y);
 				break;
 				case Left:
-					this->player.pacman.map_position =
-					            sf::Vector2f(this->player.pacman.map_position.x - 1,
-					                         this->player.pacman.map_position.y);
+					new_position = sf::Vector2f(this->player.pacman.map_position.x - 1,
+					                            this->player.pacman.map_position.y);
 				break;
 				case Down:
-					this->player.pacman.map_position =
-					            sf::Vector2f(this->player.pacman.map_position.x,
-					                         this->player.pacman.map_position.y + 1);
+					new_position = sf::Vector2f(this->player.pacman.map_position.x,
+					                            this->player.pacman.map_position.y + 1);
 				break;
 				case Up:
-					this->player.pacman.map_position =
-					            sf::Vector2f(this->player.pacman.map_position.x,
-					                         this->player.pacman.map_position.y - 1);
+					new_position = sf::Vector2f(this->player.pacman.map_position.x,
+					                            this->player.pacman.map_position.y - 1);
 				break;
 			}
-			std::cout << "Player is at [" << this->player.pacman.map_position.x << ", " <<
-			                                 this->player.pacman.map_position.y << "]" << std::endl;
+			if(this->collision_tracker.objectCanMoveTo(&this->player.pacman,
+			                                           new_position))
+			{
+				this->player.pacman.map_position = new_position;
+			}
 		}
 		enum GameState state;
 		Keyboard keyboard;
