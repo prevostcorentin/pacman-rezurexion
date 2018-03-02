@@ -7,7 +7,6 @@ namespace prx
 {
 
 
-
 	Game::Game(sf::ContextSettings context) : window(sf::VideoMode(640, 480),
 	                                                 GAME_TITLE,
 	                                                 sf::Style::Default,
@@ -19,10 +18,11 @@ namespace prx
 	{
 		this->state = Init;
 		// Connect signals to handlers
-		Sig::Collision.Connect(this, &Game::handleCollision);
-		Sig::PlayerMove.Connect(this, &Game::handlePlayerMove);
-		Sig::Quit.Connect(this, &Game::handleQuit);
-		Sig::Tick.Connect(this, &Game::handleUpdate);
+		this->collision_tracker.SigCollision.Connect(this, &Game::handleCollision);
+		this->keyboard.SigPlayerMove.Connect(this, &Game::handlePlayerMove);
+		this->keyboard.SigQuit.Connect(this, &Game::handleQuit);
+		this->SigQuit.Connect(this, &Game::handleQuit);
+		this->spinner.SigTick.Connect(this, &Game::handleUpdate);
 		// Place objects
 		this->player.pacman.map_position = sf::Vector2f(0, 0);
 		this->pac_gum.map_position = sf::Vector2f(2, 5);
@@ -59,7 +59,7 @@ namespace prx
 			} else if(objects.hasObjectOfType("ghost")) {
 				std::cout << "Player dies with score of " << this->player.getScore() << std::endl;
 				this->objects.erase(&this->player.pacman);
-				Sig::Quit.Emit();
+				this->SigQuit.Emit();
 			}
 		}
 	}

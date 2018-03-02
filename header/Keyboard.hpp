@@ -1,6 +1,10 @@
 #ifndef KEYBOARD_INCLUDED
 #define KEYBOARD_INCLUDED
 
+#include <Signals/Signal.h>
+
+#include <Object.hpp>
+
 
 namespace prx
 {
@@ -10,6 +14,8 @@ namespace prx
 	{
 		public:
 			Keyboard() { }
+			Gallant::Signal0<void> SigQuit;
+			Gallant::Signal1<enum Direction> SigPlayerMove;
 			void dispatchLastMoves();
 	};
 

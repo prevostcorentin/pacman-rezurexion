@@ -1,11 +1,12 @@
 #include <CollisionTracker.hpp>
 
-#include <Signals.hpp>
-
 
 namespace prx
 {
 
+
+	CollisionTracker::CollisionTracker(Map& m) : map(m)
+	{ }
 
 	void
 	CollisionTracker::dispatchLastCollisions() {
@@ -13,7 +14,7 @@ namespace prx
 			for(int y=0; y < this->map.height; y++) {
 				ObjectCollection objects_at_xy = this->map.getCell(x, y);
 				if(objects_at_xy.count() > 1)
-					Sig::Collision.Emit(objects_at_xy);
+					this->SigCollision.Emit(objects_at_xy);
 			}
 		}
 	}

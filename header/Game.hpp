@@ -1,6 +1,9 @@
 #ifndef GAME_INCLUDED
 #define GAME_INCLUDED
 
+#include <Signals/Delegate.h>
+#include <Signals/Signal.h>
+
 #include <SFML/Window.hpp>
 
 #include <CollisionTracker.hpp>
@@ -12,7 +15,6 @@
 #include <PacGum.hpp>
 #include <Player.hpp>
 #include <Screen.hpp>
-#include <Signals.hpp>
 #include <Wall.hpp>
 
 #define GAME_TITLE "Pacman Rezurexion"
@@ -28,6 +30,7 @@ namespace prx
 		public:
 			Game(sf::ContextSettings context);
 			void launch();
+			Gallant::Signal0<void> SigQuit;
 
 		private:
 			void handleCollision(ObjectCollection& objects);

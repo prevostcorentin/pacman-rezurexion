@@ -12,15 +12,15 @@ namespace prx
 	Keyboard::dispatchLastMoves()
 	{
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-			Sig::Quit.Emit();
+			this->SigQuit.Emit();
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			Sig::PlayerMove.Emit(Direction::Down);
+			this->SigPlayerMove.Emit(Direction::Down);
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-			Sig::PlayerMove.Emit(Direction::Left);
+			this->SigPlayerMove.Emit(Direction::Left);
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			Sig::PlayerMove.Emit(Direction::Right);
+			this->SigPlayerMove.Emit(Direction::Right);
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-			Sig::PlayerMove.Emit(Direction::Up);
+			this->SigPlayerMove.Emit(Direction::Up);
 	}
 
 
