@@ -1,7 +1,6 @@
 #include <SFML/Window/Keyboard.hpp>
 
 #include <Keyboard.hpp>
-#include <Signals.hpp>
 
 
 namespace prx
