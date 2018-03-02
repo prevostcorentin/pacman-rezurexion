@@ -6,7 +6,6 @@
 #include <SFML/Graphics/Texture.hpp>
 
 
-
 namespace prx
 {
 

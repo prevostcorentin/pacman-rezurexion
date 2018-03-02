@@ -37,10 +37,24 @@ namespace prx
 	}
 
 	void Game::launch() {
+		this->initPlayer();
 		this->state = Running;
 		while(this->window.isOpen())
 			spinner.run();
 		std::exit(EXIT_FAILURE);
+	}
+
+	void Game::initPlayer() {
+		std::string choosen_name;
+		std::cout << "Player name:";
+		std::cin >> choosen_name;
+		this->player.setName(choosen_name.c_str());
+		if(not this->database.playerExists(this->player))
+		{
+			this->database.createPlayer(this->player);
+		} else {
+			this->player = database.getPlayer(choosen_name.c_str());
+		}
 	}
 
 	void Game::handleCollision(ObjectCollection& objects) {
@@ -71,6 +85,7 @@ namespace prx
 	}
 
 	void Game::handleQuit() {
+		this->database.insertScore(this->player);
 		std::cout << "Quitting game" << std::endl;
 		window.close();
 		std::exit(EXIT_SUCCESS);
