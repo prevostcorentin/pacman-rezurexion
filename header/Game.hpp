@@ -8,6 +8,7 @@
 
 #include <CollisionTracker.hpp>
 #include <CPUSpinner.hpp>
+#include <Database.hpp>
 #include <Ghost.hpp>
 #include <Keyboard.hpp>
 #include <Map.hpp>
@@ -33,6 +34,7 @@ namespace prx
 			Gallant::Signal0<void> SigQuit;
 
 		private:
+			void initPlayer();
 			void handleCollision(ObjectCollection& objects);
 			void handleUpdate();
 			void handleQuit();
@@ -46,6 +48,7 @@ namespace prx
 			Screen screen;
 			CPUSpinner spinner;
 			CollisionTracker collision_tracker;
+			Database database;
 			Player player;
 			PacGum pac_gum;
 			Wall wall;

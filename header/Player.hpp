@@ -13,11 +13,20 @@ namespace prx
 	class Player
 	{
 		public:
-			Player() : name("unknown") { }
+			Player();
+			Player(const char *name);
+			Player(const int id, const char *name);
+			const int getId();
+			const char* getName();
 			int getScore();
+			void setId(const int);
+			void setName(const char*);
 			void setScore(const int score);
+
 			Pacman pacman;
+
 		private:
+			int id;
 			int score = 0;
 			std::string name;
 	};
