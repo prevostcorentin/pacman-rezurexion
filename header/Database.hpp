@@ -19,6 +19,7 @@ namespace prx
 			bool playerExists(Player&);
 			void insertScore(Player&);
 			Player getPlayer(const char *name);
+			int getTotalScore(Player&);
 
 		private:
 			void execute(const char *sql_request);

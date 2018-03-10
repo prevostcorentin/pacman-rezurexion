@@ -25,6 +25,16 @@ namespace prx
 		                 "FOREIGN KEY (PLAYER_ID) REFERENCES PLAYER(PLAYER_ID));");
 	}
 
+	void
+	Database::execute(const char *sql_request) {
+		if(sqlite3_exec(this->database, sql_request,
+		                NULL, 0, &this->error_message) != SQLITE_OK)
+		{
+			std::cout << "SQL Error: " << this->error_message << std::endl;
+			sqlite3_free(this->error_message);
+		}
+	}
+
 	Database::~Database() {
 		sqlite3_close(this->database);
 	}
@@ -67,6 +77,20 @@ namespace prx
 		return false;
 	}
 
+	void
+	Database::insertScore(Player& player) {
+		sqlite3_stmt *statement;
+		if(sqlite3_prepare(this->database, "INSERT INTO " \
+		                                   "SCORE(PLAYER_ID, AMOUNT) " \
+		                                   "VALUES(?, ?);",
+		                   -1, &statement, NULL) == SQLITE_OK) {
+			sqlite3_bind_int(statement, 1, player.getId());
+			sqlite3_bind_int(statement, 2, player.getScore());
+			sqlite3_step(statement);
+			sqlite3_finalize(statement);
+		}
+	}
+
 	Player
 	Database::getPlayer(const char *name) {
 		sqlite3_stmt *statement;
@@ -85,43 +109,24 @@ namespace prx
 				#endif
 			}
 			sqlite3_finalize(statement);
-			if(sqlite3_prepare(this->database, "SELECT SUM(AMOUNT) FROM SCORE " \
-			                                   "WHERE PLAYER_ID = ?;",
-			                   -1, &statement, NULL) == SQLITE_OK)
-			{
-				sqlite3_bind_int(statement, 1, player.getId());
-				if(sqlite3_step(statement) == SQLITE_DONE) {
-					std::cout << "setting score sum" << std::endl;
-					player.setScore(sqlite3_column_int(statement, 0));
-				}
-				sqlite3_finalize(statement);
-			}
 		}
 		return player;
 	}
 
-	void
-	Database::insertScore(Player& player) {
+	int
+	Database::getTotalScore(Player& player) {
 		sqlite3_stmt *statement;
-		static const char *query = "INSERT INTO " \
-		                           "SCORE(PLAYER_ID, AMOUNT) " \
-		                           "VALUES(?, ?);";
-		if(sqlite3_prepare(this->database, query, strlen(query), &statement, NULL) == SQLITE_OK) {
+		int total_score=-1;
+		if(sqlite3_prepare(this->database, "SELECT SUM(AMOUNT) FROM SCORE " \
+		                                   "WHERE PLAYER_ID = ?;",
+		                   -1, &statement, NULL) == SQLITE_OK) {
 			sqlite3_bind_int(statement, 1, player.getId());
-			sqlite3_bind_int(statement, 2, player.getScore());
 			sqlite3_step(statement);
+			total_score = sqlite3_column_int(statement, 0);
+			std::cout << total_score << std::endl;
 			sqlite3_finalize(statement);
 		}
-	}
-
-	void
-	Database::execute(const char *sql_request) {
-		if(sqlite3_exec(this->database, sql_request,
-		                NULL, 0, &this->error_message) != SQLITE_OK)
-		{
-			std::cout << "SQL Error: " << this->error_message << std::endl;
-			sqlite3_free(this->error_message);
-		}
+		return total_score;
 	}
 
 
