@@ -53,7 +53,7 @@ namespace prx
 		{
 			this->database.createPlayer(this->player);
 		} else {
-			this->player = database.getPlayer(choosen_name.c_str());
+			this->player = this->database.getPlayer(choosen_name.c_str());
 		}
 	}
 
@@ -67,11 +67,12 @@ namespace prx
 		if(objects.hasObjectOfType("pacman")) {
 			if(objects.hasObjectOfType("pac_gum")) {
 				for(auto& gum: objects.getObjectsOfType("pac_gum")) {
-					this->player.setScore(this->player.getScore() + 1);
+					this->player.setScore(1 + this->player.getScore());
 					this->objects.erase(gum);
 				}
 			} else if(objects.hasObjectOfType("ghost")) {
-				std::cout << "Player dies with score of " << this->player.getScore() << std::endl;
+				std::cout << this->player.getName() << " dies with score of " << this->player.getScore() << std::endl;
+				std::cout << this->player.getName() << " has now " << this->database.getTotalScore(this->player) << std::endl;
 				this->objects.erase(&this->player.pacman);
 				this->SigQuit.Emit();
 			}
