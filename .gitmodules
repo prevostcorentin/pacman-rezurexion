@@ -8,6 +8,7 @@
 	ignore = dirty
 	path = extlibs/SFML
 	url = https://github.com/SFML/SFML
-[submodule "test/extlibs/unittest-cpp"]
-	path = test/extlibs/unittest-cpp
+[submodule "tests/extlibs/unittest-cpp"]
+	ignore = dirty
+	path = tests/extlibs/unittest-cpp
 	url = https://github.com/unittest-cpp/unittest-cpp
