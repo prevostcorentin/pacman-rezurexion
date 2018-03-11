@@ -11,15 +11,14 @@ namespace prx
 	class Map
 	{
 		public:
-			Map(ObjectCollection& oc) : objects(oc)
-			{ }
+			Map(ObjectCollection* oc);
 			std::vector<Object*> getAllCells();
 			ObjectCollection getCell(int x, int y);
 			const int width = 16;
 			const int height = 16;
 
 		private:
-			ObjectCollection& objects;
+			ObjectCollection* objects;
 	};
 
 

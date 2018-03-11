@@ -19,7 +19,7 @@ namespace prx
 	class Object
 	{
 		public:
-			Object(const char *sprite_sheet_filepath);
+			Object(sf::Vector2f position, const char *sprite_sheet_filepath);
 			void setFrame(enum Direction direction, int n);
 			virtual const std::string getType() {
 				return std::string("undefined"); // object_type<Object>::name();

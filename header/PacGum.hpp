@@ -3,6 +3,8 @@
 
 #include <Object.hpp>
 
+#include <SFML/System.hpp>
+
 
 namespace prx
 {
@@ -11,7 +13,7 @@ namespace prx
 	class PacGum : public Object
 	{
 		public:
-			PacGum() : Object("resources/sprites/pac-gum.bmp") { }
+			PacGum(sf::Vector2f position);
 			const std::string getType();
 	};
 

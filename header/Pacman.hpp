@@ -1,9 +1,11 @@
 #ifndef PACMAN_INCLUDED
 #define PACMAN_INCLUDED
 
+#include <Object.hpp>
+
 #include <string>
 
-#include <Object.hpp>
+#include <SFML/System.hpp>
 
 
 namespace prx
@@ -13,7 +15,7 @@ namespace prx
 	class Pacman : public Object
 	{
 		public:
-			Pacman() : Object("resources/sprites/pacman.bmp") { }
+			Pacman(sf::Vector2f position);
 			const std::string getType();
 	};
 

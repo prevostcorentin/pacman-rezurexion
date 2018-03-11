@@ -9,7 +9,6 @@
 #include <CollisionTracker.hpp>
 #include <CPUSpinner.hpp>
 #include <Database.hpp>
-#include <Ghost.hpp>
 #include <Keyboard.hpp>
 #include <Map.hpp>
 #include <ObjectCollection.hpp>
@@ -43,16 +42,13 @@ namespace prx
 			enum GameState state;
 			Keyboard keyboard;
 			sf::RenderWindow window;
-			ObjectCollection objects;
+			ObjectCollection* objects;
 			Map map;
 			Screen screen;
 			CPUSpinner spinner;
 			CollisionTracker collision_tracker;
 			Database database;
 			Player player;
-			PacGum pac_gum;
-			Wall wall;
-			Ghost ghost;
 	};
 
 

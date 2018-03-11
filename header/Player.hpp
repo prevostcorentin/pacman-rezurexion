@@ -14,8 +14,7 @@ namespace prx
 	{
 		public:
 			Player();
-			Player(const char *name);
-			Player(const int id, const char *name);
+			~Player();
 			const int getId();
 			const char* getName();
 			int getScore();
@@ -23,7 +22,7 @@ namespace prx
 			void setName(const char*);
 			void setScore(const int score);
 
-			Pacman pacman;
+			Pacman* pacman;
 
 		private:
 			int id;
