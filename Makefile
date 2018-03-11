@@ -6,7 +6,7 @@ else
 	LIBS = -lpthread -ldl
 endif
 LIBS += -lsfml-system -lsfml-graphics -lsfml-window
-CXX_FLAGS = -DDEBUG -g -Wall -Wno-unused-local-typedefs -std=c++0x
+CXX_FLAGS = -g -Wall -Wno-unused-local-typedefs -std=c++0x
 EXECUTABLE = PacmanRezurexion
 
 $(EXECUTABLE): $(subst src/, obj/, $(patsubst %.cpp, %.o, $(wildcard src/*.cpp)))
