@@ -8,7 +8,6 @@
 namespace prx
 {
 
-
 	namespace Logger
 	{
 
@@ -21,7 +20,7 @@ namespace prx
 		};
 
 		void Send(enum LEVEL, std::string message...);
-
+		
 
 	}
 

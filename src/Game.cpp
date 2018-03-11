@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <Game.hpp>
+#include <Logger.hpp>
 
 
 namespace prx
@@ -60,12 +61,11 @@ namespace prx
 
 	void
 	Game::handleCollision(ObjectCollection& objects) {
-		#ifdef DEBUG
-		std::cout << "Collision: " << std::endl;
-		for(auto& o: objects.getAllObjects())
-			std::cout << "\t" << o->getType();
-		std::cout << std::endl;
-		#endif
+		for(auto& o: objects.getAllObjects()) {
+			Logger::Send(Logger::LEVEL::DEBUG, "%s has collided at (%d, %d)", o->getType(),
+			                                                                  o->map_position.x,
+			                                                                  o->map_position.y);
+		}
 		if(objects.hasObjectOfType("pacman")) {
 			if(objects.hasObjectOfType("pac_gum")) {
 				for(auto& gum: objects.getObjectsOfType("pac_gum")) {
@@ -73,8 +73,10 @@ namespace prx
 					this->objects.erase(gum);
 				}
 			} else if(objects.hasObjectOfType("ghost")) {
-				std::cout << this->player.getName() << " dies with score of " << this->player.getScore() << std::endl;
-				std::cout << this->player.getName() << " has now " << this->database.getTotalScore(this->player) << std::endl;
+				Logger::Send(Logger::LEVEL::INFO, "%s with score of %d", this->player.getName(),
+				                                                         this->player.getScore());
+				Logger::Send(Logger::LEVEL::INFO, "%s has now %d", this->player.getName(),
+				                                                   this->database.getTotalScore(this->player));
 				this->objects.erase(&this->player.pacman);
 				this->SigQuit.Emit();
 			}
