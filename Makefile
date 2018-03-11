@@ -6,8 +6,8 @@ else
 	LIBS = -lpthread -ldl
 endif
 OBJS = $(subst src/, obj/, $(patsubst %.cpp, %.o, $(wildcard src/*.cpp)))
-LIBS += -lsfml-system -lsfml-graphics -lsfml-window -lsqlite3
-CXX_FLAGS = -DDEBUG -g -Wall -Wno-unused-local-typedefs -std=c++0x
+LIBS += -lsfml-system -lsfml-graphics -lsfml-window
+CXX_FLAGS = -g -Wall -Wno-unused-local-typedefs -std=c++0x
 EXECUTABLE = PacmanRezurexion
 
 
