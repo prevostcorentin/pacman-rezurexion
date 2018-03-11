@@ -36,7 +36,8 @@ namespace prx
 		this->window.setActive();
 	}
 
-	void Game::launch() {
+	void
+	Game::launch() {
 		this->initPlayer();
 		this->state = Running;
 		while(this->window.isOpen())
@@ -44,20 +45,21 @@ namespace prx
 		std::exit(EXIT_FAILURE);
 	}
 
-	void Game::initPlayer() {
+	void
+	Game::initPlayer() {
 		std::string choosen_name;
 		std::cout << "Player name:";
 		std::cin >> choosen_name;
 		this->player.setName(choosen_name.c_str());
-		if(not this->database.playerExists(this->player))
-		{
+		if(not this->database.playerExists(this->player)) {
 			this->database.createPlayer(this->player);
 		} else {
 			this->player = this->database.getPlayer(choosen_name.c_str());
 		}
 	}
 
-	void Game::handleCollision(ObjectCollection& objects) {
+	void
+	Game::handleCollision(ObjectCollection& objects) {
 		#ifdef DEBUG
 		std::cout << "Collision: " << std::endl;
 		for(auto& o: objects.getAllObjects())
@@ -79,20 +81,23 @@ namespace prx
 		}
 	}
 
-	void Game::handleUpdate() {
+	void
+	Game::handleUpdate() {
 		this->keyboard.dispatchLastMoves();
 		this->collision_tracker.dispatchLastCollisions();
 		this->screen.draw();
 	}
 
-	void Game::handleQuit() {
+	void
+	Game::handleQuit() {
 		this->database.insertScore(this->player);
 		std::cout << "Quitting game" << std::endl;
 		window.close();
 		std::exit(EXIT_SUCCESS);
 	}
 
-	void Game::handlePlayerMove(enum Direction direction)
+	void
+	Game::handlePlayerMove(enum Direction direction)
 	{
 		sf::Vector2f new_position;
 		switch(direction) {
