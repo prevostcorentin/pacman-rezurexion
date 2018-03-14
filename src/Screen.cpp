@@ -11,8 +11,8 @@ namespace prx
 		for(auto& o: this->map.getAllCells())
 		{
 			sf::Sprite *s = o->getSprite();
-			s->setPosition(16 * o->map_position.x,
-			               16 * o->map_position.y);
+			s->setPosition(32 * o->map_position.x,
+			               32 * o->map_position.y);
 			this->window.draw(*s);
 		}
 		this->window.display();

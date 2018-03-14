@@ -6,6 +6,7 @@
 namespace prx
 {
 
+
 	void _makeTmpMap(ObjectCollection& objects) {
 		/* Temporary map must be this (width:8, height:5):
 		 *    01234567
@@ -50,6 +51,14 @@ namespace prx
 			gum->map_position = sf::Vector2f(0, y);
 			objects.add(gum);
 		}
+		for(int x=0; x < 6; x++) {
+			gum = new PacGum();
+			gum->map_position = sf::Vector2f(x, 2);
+			objects.add(gum);
+		}
+		gum = new PacGum();
+		gum->map_position = sf::Vector2f(5, 3);
+		objects.add(gum);
 		gum = new PacGum();
 		gum->map_position = sf::Vector2f(7, 0);
 		objects.add(gum);
@@ -113,12 +122,6 @@ namespace prx
 	}
 
 	void Game::handleCollision(ObjectCollection& objects) {
-		#ifdef DEBUG
-		std::cout << "Collision: " << std::endl;
-		for(auto& o: objects.getAllObjects())
-			std::cout << "\t" << o->getType();
-		std::cout << std::endl;
-		#endif
 		if(objects.hasObjectOfType("pacman")) {
 			if(objects.hasObjectOfType("pac_gum")) {
 				for(auto& gum: objects.getObjectsOfType("pac_gum")) {

@@ -1,5 +1,7 @@
 #include <CollisionTracker.hpp>
 
+#include <iostream>
+
 
 namespace prx
 {
@@ -20,12 +22,24 @@ namespace prx
 	}
 
 	bool
-	CollisionTracker::objectCanMoveTo(Object *o, const sf::Vector2f& position) {
-		ObjectCollection objects_on_cell = this->map.getCell(position.x, position.y);
-		if(objects_on_cell.hasObjectOfType("wall"))
+	CollisionTracker::objectCanMoveTo(Object *o,
+	                                  const sf::Vector2f& position)
+	{
+		ObjectCollection objects_on_cell = this->map.getCell(position.x,
+		                                                     position.y);
+		if((position.x < 0 or position.y < 0) or
+		   (position.x >= this->map.width or position.y >= this->map.height) or
+		   (objects_on_cell.hasObjectOfType("wall")))
+		{
+			#ifdef DEBUG
+			std::cout << o->getType() << " can not move from [" <<
+			             o->map_position.x << ", " << o->map_position.y << "] to [" <<
+			             position.x << ", " << position.y << "]" << std::endl;
+			#endif
 			return false;
-		else
+		} else {
 			return true;
+		}
 	}
 
 

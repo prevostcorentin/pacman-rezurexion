@@ -15,8 +15,8 @@ namespace prx
 			{ }
 			std::vector<Object*> getAllCells();
 			ObjectCollection getCell(int x, int y);
-			const int width = 16;
-			const int height = 16;
+			const int width = 8;
+			const int height = 5;
 
 		private:
 			ObjectCollection& objects;
