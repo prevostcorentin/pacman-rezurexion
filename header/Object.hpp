@@ -21,6 +21,7 @@ namespace prx
 		public:
 			Object(const char *sprite_sheet_filepath);
 			void setFrame(enum Direction direction, int n);
+			void move(enum Direction);
 			virtual const std::string getType() {
 				return std::string("undefined"); // object_type<Object>::name();
 			}

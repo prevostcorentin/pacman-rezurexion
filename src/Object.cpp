@@ -22,6 +22,24 @@ namespace prx
 	}
 
 	void
+	Object::move(enum Direction direction) {
+		switch(direction) {
+			case Up:
+				this->map_position.y--;
+				break;
+			case Down:
+				this->map_position.y++;
+				break;
+			case Left:
+				this->map_position.x--;
+				break;
+			case Right:
+				this->map_position.x++;
+				break;
+		}
+	}
+
+	void
 	Object::setFrame(enum Direction direction, int n) {
 		this->sprite.setTextureRect(sf::IntRect(n * 32, direction * 32,
 		                                        32, 32));

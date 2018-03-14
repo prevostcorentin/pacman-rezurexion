@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <Object.hpp>
+
 
 namespace prx
 {
@@ -19,6 +21,32 @@ namespace prx
 					this->SigCollision.Emit(objects_at_xy);
 			}
 		}
+	}
+
+	bool
+	CollisionTracker::objectCanMoveTo(Object *o,
+	                                  const enum Direction direction)
+	{
+		bool can_move = false;
+		switch(direction) {
+			case Up:
+				can_move = this->objectCanMoveTo(o, sf::Vector2f(o->map_position.x,
+				                                                 o->map_position.y - 1));
+			break;
+			case Down:
+				can_move = this->objectCanMoveTo(o, sf::Vector2f(o->map_position.x,
+				                                                 o->map_position.y + 1));
+			break;
+			case Left:
+				can_move = this->objectCanMoveTo(o, sf::Vector2f(o->map_position.x - 1,
+				                                                 o->map_position.y));
+			break;
+			case Right:
+				can_move = this->objectCanMoveTo(o, sf::Vector2f(o->map_position.x + 1,
+				                                                 o->map_position.y));
+			break;
+		}
+		return can_move;
 	}
 
 	bool

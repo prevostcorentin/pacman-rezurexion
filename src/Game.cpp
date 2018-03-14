@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <Game.hpp>
+#include <PathFinder.hpp>
 
 
 namespace prx
@@ -139,6 +140,21 @@ namespace prx
 
 	void Game::handleUpdate() {
 		this->keyboard.dispatchLastMoves();
+		for(auto& ghost: this->objects.getObjectsOfType(object_type<Ghost>::name())) {
+			const enum Direction direction = PathFinder::GetShortestDirection(
+			                                    ghost->map_position,
+			                                    this->player.pacman.map_position,
+			                                    this->map
+			                                 );
+			if(this->collision_tracker.objectCanMoveTo(ghost, direction)) {
+				ghost->move(direction);
+			} else {
+				if(this->collision_tracker.objectCanMoveTo(ghost, Up))
+					ghost->move(Up);
+				else if(this->collision_tracker.objectCanMoveTo(ghost, Right))
+					ghost->move(Right);
+			}
+		}
 		this->collision_tracker.dispatchLastCollisions();
 		this->screen.draw();
 	}
