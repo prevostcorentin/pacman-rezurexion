@@ -50,9 +50,6 @@ namespace prx
 			CollisionTracker collision_tracker;
 			Database database;
 			Player player;
-			PacGum pac_gum;
-			Wall wall;
-			Ghost ghost;
 	};
 
 
