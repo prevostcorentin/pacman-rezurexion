@@ -120,7 +120,7 @@ namespace prx
 		if(not this->database.playerExists(this->player))
 			this->database.createPlayer(this->player);
 		else
-			this->player = this->database.getPlayer(choosen_name.c_str());
+			this->database.refreshPlayer(this->player);
 	}
 
 	void

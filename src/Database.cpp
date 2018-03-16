@@ -91,15 +91,14 @@ namespace prx
 		}
 	}
 
-	Player
-	Database::getPlayer(const char *name) {
+	void
+	Database::refreshPlayer(Player& player) {
 		sqlite3_stmt *statement;
-		Player player;
 		if(sqlite3_prepare(this->database, "SELECT PLAYER_ID, NAME FROM PLAYER " \
 		                                   "WHERE NAME = ?;",
 		                   -1, &statement, NULL) == SQLITE_OK)
 		{
-			sqlite3_bind_text(statement, 1, name, strlen(name), NULL);
+			sqlite3_bind_text(statement, 1, player.getName(), strlen(player.getName()), NULL);
 			if(sqlite3_step(statement) == SQLITE_ROW) {
 				player.setId(sqlite3_column_int(statement, 0));
 				player.setName((const char*) sqlite3_column_text(statement, 1));
@@ -110,7 +109,6 @@ namespace prx
 			}
 			sqlite3_finalize(statement);
 		}
-		return player;
 	}
 
 	int

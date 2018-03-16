@@ -18,7 +18,7 @@ namespace prx
 			void createPlayer(Player&);
 			bool playerExists(Player&);
 			void insertScore(Player&);
-			Player getPlayer(const char *name);
+			void refreshPlayer(Player&);
 			int getTotalScore(Player&);
 
 		private:
