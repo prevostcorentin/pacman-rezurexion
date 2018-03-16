@@ -5,5 +5,10 @@
 	path = extlibs/Signals
 	url = https://github.com/pbhogan/Signals
 [submodule "extlibs/SFML"]
+	ignore = dirty
 	path = extlibs/SFML
 	url = https://github.com/SFML/SFML
+[submodule "tests/extlibs/unittest-cpp"]
+	ignore = dirty
+	path = tests/extlibs/unittest-cpp
+	url = https://github.com/unittest-cpp/unittest-cpp

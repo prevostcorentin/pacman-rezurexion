@@ -2,6 +2,7 @@
 
 #include <Game.hpp>
 #include <PathFinder.hpp>
+#include <Logger.hpp>
 
 
 namespace prx
@@ -101,7 +102,8 @@ namespace prx
 		this->window.setActive();
 	}
 
-	void Game::launch() {
+	void
+	Game::launch() {
 		this->initPlayer();
 		this->state = Running;
 		while(this->window.isOpen())
@@ -109,7 +111,8 @@ namespace prx
 		std::exit(EXIT_FAILURE);
 	}
 
-	void Game::initPlayer() {
+	void
+	Game::initPlayer() {
 		std::string choosen_name;
 		std::cout << "Player name:";
 		std::cin >> choosen_name;
@@ -120,7 +123,13 @@ namespace prx
 			this->player = this->database.getPlayer(choosen_name.c_str());
 	}
 
-	void Game::handleCollision(ObjectCollection& objects) {
+	void
+	Game::handleCollision(ObjectCollection& objects) {
+		for(auto& o: objects.getAllObjects()) {
+			Logger::Send(Logger::LEVEL::DEBUG, "%s has collided at (%d, %d)", o->getType(),
+			                                                                  o->map_position.x,
+			                                                                  o->map_position.y);
+		}
 		if(objects.hasObjectOfType("pacman")) {
 			if(objects.hasObjectOfType("pac_gum")) {
 				for(auto& gum: objects.getObjectsOfType("pac_gum")) {
@@ -128,15 +137,18 @@ namespace prx
 					this->objects.erase(gum);
 				}
 			} else if(objects.hasObjectOfType("ghost")) {
-				std::cout << this->player.getName() << " dies with score of " << this->player.getScore() << std::endl;
-				std::cout << this->player.getName() << " has now " << this->database.getTotalScore(this->player) << std::endl;
+				Logger::Send(Logger::LEVEL::INFO, "%s dies with %d pac-gum(s) eaten", this->player.getName(),
+				                                                         this->player.getScore());
+				Logger::Send(Logger::LEVEL::INFO, "%s has now %d", this->player.getName(),
+				                                                   this->database.getTotalScore(this->player));
 				this->objects.erase(&this->player.pacman);
 				this->SigQuit.Emit();
 			}
 		}
 	}
 
-	void Game::handleUpdate() {
+	void
+	Game::handleUpdate() {
 		this->keyboard.dispatchLastMoves();
 		for(auto& ghost: this->objects.getObjectsOfType(object_type<Ghost>::name()))
 			ghost->map_position =
@@ -149,14 +161,17 @@ namespace prx
 		this->screen.draw();
 	}
 
-	void Game::handleQuit() {
+	void
+	Game::handleQuit() {
 		this->database.insertScore(this->player);
 		std::cout << "Quitting game" << std::endl;
 		window.close();
 		std::exit(EXIT_SUCCESS);
 	}
 
-	void Game::handlePlayerMove(enum Direction direction) {
+	void
+	Game::handlePlayerMove(enum Direction direction)
+	{
 		sf::Vector2f new_position;
 		switch(direction) {
 			case Right:
