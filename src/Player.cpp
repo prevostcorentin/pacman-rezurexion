@@ -14,6 +14,10 @@ namespace prx
 	                   name("undefined")
 	{ }
 
+	Player::~Player() {
+		delete this->pacman;
+	}
+
 	int
 	Player::getScore() {
 		return this->score;

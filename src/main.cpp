@@ -9,7 +9,7 @@
 
 
 
-int main()
+int main(int argc, char *argv[])
 {
 	sf::ContextSettings context;
 	context.depthBits = 24;

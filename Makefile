@@ -11,28 +11,28 @@ CXX_FLAGS = -g -Wall -Wno-unused-local-typedefs -std=c++0x
 EXECUTABLE = PacmanRezurexion
 
 
-.SILENT: $(OBJS) $(EXECUTABLE) prx-static-lib exe-without-lib
+.SILENT: $(OBJS) $(EXECUTABLE) lib/libprx.a exe-without-lib
 
 
-init: obj $(OBJS) prx-static-lib $(EXECUTABLE)
+init: obj $(EXECUTABLE)
 
 obj:
 	mkdir $@
 
-$(EXECUTABLE): $(OBJS) prx-static-lib lib/libsqlite3.a
+$(EXECUTABLE): $(OBJS) lib/libprx.a lib/libsqlite3.a
 	@echo Compiling statically linked version of $(EXECUTABLE)
 	$(CXX) $(CXX_FLAGS) src/main.cpp -o $(EXECUTABLE) \
 		-Iextlibs -Iextlibs/SFML/include -Iheader \
-		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ $(LIBS) -lprx
+		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ $(LIBS) -lprx -lsqlite3
 
-prx-static-lib: $(OBJS) lib
+lib/libprx.a: $(OBJS) lib
 	@echo Linking game static library ...
-	ar rvs -o lib/libprx.a $(OBJS)
+	@ar rvs -o $@ $(OBJS)
 
-exe-without-lib: $(OBJS) lib/libsqlite3.a
+exe-without-lib: $(OBJS) obj/main.o lib/libsqlite3.a
 	@echo Compiling $(EXECUTABLE) by linking game objects ...
 	$(CXX) $(CXX_FLAGS) obj/*.o -o $(EXECUTABLE) \
-		-Lextlibs/SFML/lib -Llib $(LIBS)
+		-Lextlibs/SFML/lib -Llib $(LIBS) -lsqlite3
 
 obj/%.o: src/%.cpp
 	@echo Compiling object file $@ ...
@@ -41,6 +41,7 @@ obj/%.o: src/%.cpp
 
 
 dependencies: SFML lib/libsqlite3.a
+
 
 lib/libsqlite3.a: obj/extlibs/sqlite3 obj/extlibs/sqlite3/sqlite3.o lib
 	@echo Linking $@ ...

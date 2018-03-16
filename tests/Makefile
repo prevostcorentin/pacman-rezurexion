@@ -13,10 +13,11 @@ test: TestPacmanRezurexion
 
 TestPacmanRezurexion: obj $(patsubst %.cpp, obj/%.o, $(wildcard *.cpp))
 	$(CXX) -o $@ obj/*.o \
-		-L../lib -Llib -lUnitTest++ -lsqlite3
+		-L../lib -Llib -lsfml-system -lsfml-graphics -lsfml-window \
+		    -lUnitTest++ -lprx -lsqlite3
 
 obj:
-	mkdir obj
+	@mkdir obj
 
 obj/%.o: %.cpp
 	$(CXX) -c $< -o $@ \
@@ -32,9 +33,12 @@ dependencies: ../lib/libprx.a ../lib/libsqlite3.a lib/libUnitTest++.a
 ../lib/libsqlite3.a:
 	cd ..; make lib/libsqlite3.a
 
-lib/libUnitTest++.a:
+lib/libUnitTest++.a: lib
 	cd extlibs/unittest-cpp; cmake -G$(CMAKE_MAKEFILE_TYPE); make
 	cp extlibs/unittest-cpp/libUnitTest++.a lib
+
+lib:
+	mkdir lib
 
 clean:
 	rm obj/*.o
