@@ -15,7 +15,7 @@ namespace prx
 		public:
 			Keyboard() { }
 			Gallant::Signal0<void> SigQuit;
-			Gallant::Signal1<enum Direction> SigPlayerMove;
+			Gallant::Signal1<enum DIRECTION> SigPlayerMove;
 			void dispatchLastMoves();
 	};
 

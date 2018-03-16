@@ -9,28 +9,31 @@
 namespace prx
 {
 
-
-	enum Direction { Right=0, Left=1, Down=2, Up=3 };
+	enum DIRECTION { RIGHT=0, LEFT=1, DOWN=2, UP=3 };
 
 	template<typename T> struct object_type {
-		const char* name() { return "undefined"; }
+		static const char* name() { return "undefined"; }
 	};
 
 	class Object
 	{
+
 		public:
 			Object(sf::Vector2f position, const char *sprite_sheet_filepath);
-			void setFrame(enum Direction direction, int n);
-			void move(enum Direction);
+			void setFrame(const enum DIRECTION direction, int n);
+			void move(enum DIRECTION);
 			virtual const std::string getType() {
-				return std::string("undefined"); // object_type<Object>::name();
+				return object_type<Object>::name();
 			}
 			sf::Sprite* getSprite();
+
 			sf::Vector2f map_position;
+
 		protected:
 			sf::Image image;
 			sf::Texture texture;
 			sf::Sprite sprite;
+
 	};
 
 

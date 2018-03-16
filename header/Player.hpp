@@ -23,6 +23,7 @@ namespace prx
 			void setScore(const int score);
 
 			Pacman* pacman;
+			enum DIRECTION direction;
 
 		private:
 			int id;
