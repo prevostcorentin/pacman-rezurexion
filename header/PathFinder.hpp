@@ -3,7 +3,10 @@
 
 #include <vector>
 
+#include <SFML/System.hpp>
+
 #include <Map.hpp>
+
 
 
 namespace prx
@@ -13,9 +16,9 @@ namespace prx
 	namespace PathFinder
 	{
 
-		enum Direction GetShortestDirection(sf::Vector2f begin,
-		                                    sf::Vector2f end,
-		                                    Map&);
+
+		sf::Vector2f GetNearestShortestPosition(sf::Vector2f& begin, sf::Vector2f& end, Map&);
+
 
 	}
 

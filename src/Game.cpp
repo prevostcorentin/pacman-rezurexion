@@ -115,11 +115,9 @@ namespace prx
 		std::cin >> choosen_name;
 		this->player.setName(choosen_name.c_str());
 		if(not this->database.playerExists(this->player))
-		{
 			this->database.createPlayer(this->player);
-		} else {
+		else
 			this->player = this->database.getPlayer(choosen_name.c_str());
-		}
 	}
 
 	void Game::handleCollision(ObjectCollection& objects) {
@@ -140,21 +138,13 @@ namespace prx
 
 	void Game::handleUpdate() {
 		this->keyboard.dispatchLastMoves();
-		for(auto& ghost: this->objects.getObjectsOfType(object_type<Ghost>::name())) {
-			const enum Direction direction = PathFinder::GetShortestDirection(
-			                                    ghost->map_position,
-			                                    this->player.pacman.map_position,
-			                                    this->map
-			                                 );
-			if(this->collision_tracker.objectCanMoveTo(ghost, direction)) {
-				ghost->move(direction);
-			} else {
-				if(this->collision_tracker.objectCanMoveTo(ghost, Up))
-					ghost->move(Up);
-				else if(this->collision_tracker.objectCanMoveTo(ghost, Right))
-					ghost->move(Right);
-			}
-		}
+		for(auto& ghost: this->objects.getObjectsOfType(object_type<Ghost>::name()))
+			ghost->map_position =
+				PathFinder::GetNearestShortestPosition(
+					ghost->map_position,
+					this->player.pacman.map_position,
+					this->map
+				);
 		this->collision_tracker.dispatchLastCollisions();
 		this->screen.draw();
 	}
@@ -166,8 +156,7 @@ namespace prx
 		std::exit(EXIT_SUCCESS);
 	}
 
-	void Game::handlePlayerMove(enum Direction direction)
-	{
+	void Game::handlePlayerMove(enum Direction direction) {
 		sf::Vector2f new_position;
 		switch(direction) {
 			case Right:
