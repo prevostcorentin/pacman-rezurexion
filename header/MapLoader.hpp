@@ -10,7 +10,7 @@ namespace prx
 {
 
 
-	void LoadMapFromFilename(Map&, const char *filename);
+	ObjectCollection* GetGameObjectsFromFilename(const char *filename);
 
 
 }

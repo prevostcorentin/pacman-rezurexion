@@ -1,22 +1,17 @@
+#include <Player.hpp>
+
 #include <iostream>
 
-#include <Player.hpp>
+#include <SFML/System.hpp>
 
 
 namespace prx
 {
 
 
-	Player::Player() : id(-1),
+	Player::Player() : pacman(new Pacman(sf::Vector2f(0, 0))),
+	                   id(-1),
 	                   name("undefined")
-	{ }
-
-	Player::Player(const char *_name) : id(-1),
-	                                    name(_name)
-	{ }
-
-	Player::Player(const int _id, const char *_name) : id(_id),
-	                                                   name(_name)
 	{ }
 
 	int

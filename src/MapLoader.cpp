@@ -1,5 +1,10 @@
 #include <MapLoader.hpp>
 
+#include <Ghost.hpp>
+#include <Pacman.hpp>
+#include <PacGum.hpp>
+#include <Wall.hpp>
+
 #include <cctype>
 #include <iostream>
 #include <iterator>
@@ -51,13 +56,32 @@ namespace prx
 {
 
 
-	void
-	LoadGameObjectsFromFilename(ObjectCollection& objects, const char *filename) {
-		std::ifstream file(filename);
-		if(::MapFile::get_last_error(file)) {
+	ObjectCollection*
+	GetGameObjectsFromFilename(const char *filename) {
+		ObjectCollection *objects = new ObjectCollection();
+		std::ifstream fstream(filename);
+		std::istream_iterator<char> fstream_it(fstream);
+		/*if(::MapFile::get_last_error(file)) {
 			std::cout << "Can not load " << filename << std::endl;
 			return;
+		}*/
+		::MapFile::header_t header = ::MapFile::_extract_header(fstream);
+		// skip header
+		for(; *fstream_it != '\n'; fstream_it++);
+		for(int x=0; x < header.map_width; x++) {
+			for(int y=0; y < header.map_height; y++) {
+				if(*fstream_it == '*') {
+					objects->add(new PacGum(sf::Vector2f(x, y)));
+				} else if(*fstream_it == '-' or *fstream_it == '|') {
+					objects->add(new Wall(sf::Vector2f(x, y)));
+				} else if(*fstream_it == 'G') {
+					objects->add(new PacGum(sf::Vector2f(x, y)));
+					objects->add(new Ghost(sf::Vector2f(x, y)));
+				}
+				fstream_it++;
+			}
 		}
+		return objects;
 	}
 
 

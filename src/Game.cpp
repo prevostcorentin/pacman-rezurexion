@@ -3,6 +3,7 @@
 #include <Game.hpp>
 #include <PathFinder.hpp>
 #include <Logger.hpp>
+#include <MapLoader.hpp>
 
 
 namespace prx
@@ -83,6 +84,7 @@ namespace prx
 	                                                 GAME_TITLE,
 	                                                 sf::Style::Default,
 	                                                 context),
+	                                          objects(GetGameObjectsFromFilename("resources/map/simple.map")),
 	                                          map(objects),
 	                                          screen(window, map),
 	                                          spinner(window),
@@ -95,10 +97,9 @@ namespace prx
 		this->keyboard.SigQuit.Connect(this, &Game::handleQuit);
 		this->SigQuit.Connect(this, &Game::handleQuit);
 		this->spinner.SigTick.Connect(this, &Game::handleUpdate);
-		_makeTmpMap(this->objects);
 		this->player.pacman.map_position = sf::Vector2f(0, 0);
-		// Adding it to the collection
-		this->objects.add(&this->player.pacman);
+		// Adding player to game
+		this->objects->add(this->player.pacman);
 		this->window.setActive();
 	}
 
@@ -134,14 +135,14 @@ namespace prx
 			if(objects.hasObjectOfType("pac_gum")) {
 				for(auto& gum: objects.getObjectsOfType("pac_gum")) {
 					this->player.setScore(1 + this->player.getScore());
-					this->objects.erase(gum);
+					this->objects->erase(gum);
 				}
 			} else if(objects.hasObjectOfType("ghost")) {
 				Logger::Send(Logger::LEVEL::INFO, "%s dies with %d pac-gum(s) eaten", this->player.getName(),
 				                                                         this->player.getScore());
 				Logger::Send(Logger::LEVEL::INFO, "%s has now %d", this->player.getName(),
 				                                                   this->database.getTotalScore(this->player));
-				this->objects.erase(&this->player.pacman);
+				this->objects->erase(this->player.pacman);
 				this->SigQuit.Emit();
 			}
 		}
@@ -175,26 +176,26 @@ namespace prx
 		sf::Vector2f new_position;
 		switch(direction) {
 			case Right:
-				new_position = sf::Vector2f(this->player.pacman.map_position.x + 1,
-				                            this->player.pacman.map_position.y);
+				new_position = sf::Vector2f(this->player.pacman->map_position.x + 1,
+				                            this->player.pacman->map_position.y);
 			break;
 			case Left:
-				new_position = sf::Vector2f(this->player.pacman.map_position.x - 1,
-				                            this->player.pacman.map_position.y);
+				new_position = sf::Vector2f(this->player.pacman->map_position.x - 1,
+				                            this->player.pacman->map_position.y);
 			break;
 			case Down:
-				new_position = sf::Vector2f(this->player.pacman.map_position.x,
-				                            this->player.pacman.map_position.y + 1);
+				new_position = sf::Vector2f(this->player.pacman->map_position.x,
+				                            this->player.pacman->map_position.y + 1);
 			break;
 			case Up:
-				new_position = sf::Vector2f(this->player.pacman.map_position.x,
-				                            this->player.pacman.map_position.y - 1);
+				new_position = sf::Vector2f(this->player.pacman->map_position.x,
+				                            this->player.pacman->map_position.y - 1);
 			break;
 		}
-		if(this->collision_tracker.objectCanMoveTo(&this->player.pacman,
+		if(this->collision_tracker.objectCanMoveTo(this->player.pacman,
 		                                           new_position))
 		{
-			this->player.pacman.map_position = new_position;
+			this->player.pacman->map_position = new_position;
 		}
 	}
 

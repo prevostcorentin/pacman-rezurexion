@@ -7,7 +7,8 @@ namespace prx
 {
 
 
-	Object::Object(const char *sprite_sheet_filepath) {
+	Object::Object(sf::Vector2f position, const char *sprite_sheet_filepath) {
+		this->map_position = position;
 		sf::Color color(255, 255, 255, 255);
 		if(!this->image.loadFromFile(sprite_sheet_filepath))
 			std::cout << "Unable to load sprite sheet: " << sprite_sheet_filepath << std::endl;

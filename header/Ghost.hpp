@@ -1,9 +1,11 @@
 #ifndef GHOST_INCLUDED
 #define GHOST_INCLUDED
 
+#include <Object.hpp>
+
 #include <string>
 
-#include <Object.hpp>
+#include <SFML/System.hpp>
 
 
 namespace prx
@@ -13,7 +15,7 @@ namespace prx
 	class Ghost : public Object
 	{
 		public:
-			Ghost() : Object("resources/sprites/ghost.bmp") { }
+			Ghost(sf::Vector2f position);
 			const std::string getType();
 	};
 

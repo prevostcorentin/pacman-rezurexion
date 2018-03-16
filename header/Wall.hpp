@@ -3,6 +3,8 @@
 
 #include <Object.hpp>
 
+#include <SFML/System.hpp>
+
 
 namespace prx
 {
@@ -11,7 +13,7 @@ namespace prx
 	class Wall : public Object
 	{
 		public:
-			Wall() : Object("resources/sprites/wall.bmp") { }
+			Wall(sf::Vector2f position);
 			const std::string getType();
 	};
 

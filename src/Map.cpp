@@ -5,10 +5,13 @@ namespace prx
 {
 
 
+	Map::Map(ObjectCollection *oc)  : objects(oc)
+	{ }
+
 	ObjectCollection
 	Map::getCell(int x, int y) {
 		ObjectCollection objects_at_position;
-		for(auto o: this->objects.getAllObjects()) {
+		for(auto o: this->objects->getAllObjects()) {
 			if(x == o->map_position.x and y == o->map_position.y)
 				objects_at_position.add(o);
 		}
@@ -17,7 +20,7 @@ namespace prx
 
 	std::vector<Object*>
 	Map::getAllCells() {
-		return this->objects.getAllObjects();
+		return this->objects->getAllObjects();
 	}
 
 
