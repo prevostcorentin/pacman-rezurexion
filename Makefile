@@ -14,7 +14,7 @@ EXECUTABLE = PacmanRezurexion
 .SILENT: $(OBJS) $(EXECUTABLE) prx-static-lib exe-without-lib
 
 
-init: obj $(OBJS) dependencies prx-static-lib $(EXECUTABLE)
+init: obj $(OBJS) prx-static-lib $(EXECUTABLE)
 
 obj:
 	mkdir $@
