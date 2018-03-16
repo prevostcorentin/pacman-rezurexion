@@ -1,6 +1,7 @@
 #include <MapLoader.hpp>
 
 #include <Ghost.hpp>
+#include <Logger.hpp>
 #include <Pacman.hpp>
 #include <PacGum.hpp>
 #include <Wall.hpp>
@@ -23,6 +24,7 @@ namespace prx
 
 	ObjectCollection*
 	GetGameObjectsFromFilename(const char *filename) {
+		Logger::Send(Logger::LEVEL::INFO, "Loading map from file %s", filename);
 		ObjectCollection *objects = new ObjectCollection();
 		std::ifstream fstream(filename);
 		std::istream_iterator<char> fstream_it(fstream);
@@ -43,8 +45,8 @@ namespace prx
 					objects->add(new PacGum(sf::Vector2f(x, y)));
 					objects->add(new Ghost(sf::Vector2f(x, y)));
 				}
-				fstream_it++;
 			}
+			std::cout << std::endl;
 		}
 		return objects;
 	}

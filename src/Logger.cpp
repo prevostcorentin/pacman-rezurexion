@@ -17,14 +17,19 @@ namespace prx
 		for(std::string::iterator it=message.begin(); it != message.end(); it++) {
 			if(*it == '%') {
 				it++;
-				if(*it == 's') {
-					output << va_arg(args, std::string);
-				} else if(*it == 'c') {
+				if(*it == 's')
+					output << va_arg(args, char*);
+				else if(*it == 'c')
 					output << static_cast<char>(va_arg(args, int));
-				} else if(*it == 'd') {
+				else if(*it == 'd')
 					output << va_arg(args, int);
-				}
-				it++;
+				// If the format chain type specifier is the last character in the input stream,
+				// incrementing iterator leads to segmentation fault when inserting it in the
+				// output stream.
+				if((it + 1) == message.end())
+					break;
+				else
+					it++;
 			}
 			output << *it;
 		}
@@ -39,7 +44,6 @@ namespace prx
 		}
 		va_end(args);
 	}
-
 
 
 }
