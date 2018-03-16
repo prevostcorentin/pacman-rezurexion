@@ -1,84 +1,15 @@
 #include <iostream>
 
 #include <Game.hpp>
-#include <PathFinder.hpp>
+#include <Ghost.hpp>
 #include <Logger.hpp>
 #include <MapLoader.hpp>
+#include <PathFinder.hpp>
 
 
 namespace prx
 {
 
-
-	void _makeTmpMap(ObjectCollection& objects) {
-		/* Temporary map must be this (width:8, height:5):
-		 *    01234567
-		 *   0P*******
-		 *   1*------*
-		 *   2******|*
-		 *   3*----*|G
-		 *   4********
-		 */
-		// Place walls
-		Wall *wall = nullptr;
-		for(int x=1; x < 7; x++) {
-			wall = new Wall();
-			wall->map_position = sf::Vector2f(x, 1);
-			objects.add(wall);
-		}
-		wall = new Wall();
-		wall->map_position = sf::Vector2f(6, 2);
-		objects.add(wall);
-		wall = new Wall();
-		wall->map_position = sf::Vector2f(6, 3);
-		objects.add(wall);
-		for(int x=1; x < 5; x++) {
-			wall = new Wall();
-			wall->map_position = sf::Vector2f(x, 3);
-			objects.add(wall);
-		}
-		// Place pac-gums
-		PacGum *gum = nullptr;
-		for(int x=1; x < 8; x++) {
-			gum = new PacGum();
-			gum->map_position = sf::Vector2f(x, 0);
-			objects.add(gum);
-		}
-		for(int x=0; x < 8; x++) {
-			gum = new PacGum();
-			gum->map_position = sf::Vector2f(x, 4);
-			objects.add(gum);
-		}
-		for(int y=1; y < 5; y++) {
-			gum = new PacGum();
-			gum->map_position = sf::Vector2f(0, y);
-			objects.add(gum);
-		}
-		for(int x=0; x < 6; x++) {
-			gum = new PacGum();
-			gum->map_position = sf::Vector2f(x, 2);
-			objects.add(gum);
-		}
-		gum = new PacGum();
-		gum->map_position = sf::Vector2f(5, 3);
-		objects.add(gum);
-		gum = new PacGum();
-		gum->map_position = sf::Vector2f(7, 0);
-		objects.add(gum);
-		gum = new PacGum();
-		gum->map_position = sf::Vector2f(7, 1);
-		objects.add(gum);
-		gum = new PacGum();
-		gum->map_position = sf::Vector2f(7, 2);
-		objects.add(gum);
-		gum = new PacGum();
-		gum->map_position = sf::Vector2f(7, 4);
-		objects.add(gum);
-		// Place ghost
-		Ghost *ghost = new Ghost();
-		ghost->map_position = sf::Vector2f(7, 3);
-		objects.add(ghost);
-	}
 
 	Game::Game(sf::ContextSettings context) : window(sf::VideoMode(640, 480),
 	                                                 GAME_TITLE,
@@ -97,7 +28,7 @@ namespace prx
 		this->keyboard.SigQuit.Connect(this, &Game::handleQuit);
 		this->SigQuit.Connect(this, &Game::handleQuit);
 		this->spinner.SigTick.Connect(this, &Game::handleUpdate);
-		this->player.pacman.map_position = sf::Vector2f(0, 0);
+		this->player.pacman->map_position = sf::Vector2f(0, 0);
 		// Adding player to game
 		this->objects->add(this->player.pacman);
 		this->window.setActive();
@@ -151,11 +82,11 @@ namespace prx
 	void
 	Game::handleUpdate() {
 		this->keyboard.dispatchLastMoves();
-		for(auto& ghost: this->objects.getObjectsOfType(object_type<Ghost>::name()))
+		for(auto& ghost: this->objects->getObjectsOfType(object_type<Ghost>::name()))
 			ghost->map_position =
 				PathFinder::GetNearestShortestPosition(
 					ghost->map_position,
-					this->player.pacman.map_position,
+					this->player.pacman->map_position,
 					this->map
 				);
 		this->collision_tracker.dispatchLastCollisions();

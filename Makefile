@@ -5,7 +5,7 @@ else
 	CMAKE_MAKEFILE_TYPE = "Unix Makefiles"
 	LIBS = -lpthread -ldl
 endif
-OBJS = $(subst src/, obj/, $(patsubst %.cpp, %.o, $(wildcard src/*.cpp)))
+OBJS = $(filter-out obj/main.o, $(subst src/, obj/, $(patsubst %.cpp, %.o, $(wildcard src/*.cpp))))
 LIBS += -lsfml-system -lsfml-graphics -lsfml-window
 CXX_FLAGS = -g -Wall -Wno-unused-local-typedefs -std=c++0x
 EXECUTABLE = PacmanRezurexion
@@ -27,7 +27,7 @@ $(EXECUTABLE): $(OBJS) prx-static-lib lib/libsqlite3.a
 
 prx-static-lib: $(OBJS) lib
 	@echo Linking game static library ...
-	ar rvs -o lib/libprx.a $(filter-out obj/main.o, $(wildcard obj/*.o))
+	ar rvs -o lib/libprx.a $(OBJS)
 
 exe-without-lib: $(OBJS) lib/libsqlite3.a
 	@echo Compiling $(EXECUTABLE) by linking game objects ...
