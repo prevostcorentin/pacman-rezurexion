@@ -71,8 +71,6 @@ namespace prx
 			} else if(objects.hasObjectOfType("ghost")) {
 				Logger::Send(Logger::LEVEL::INFO, "%s dies with %d pac-gum(s) eaten", this->player.getName(),
 				                                                         this->player.getScore());
-				Logger::Send(Logger::LEVEL::INFO, "%s has now %d", this->player.getName(),
-				                                                   this->database.getTotalScore(this->player));
 				this->objects->erase(this->player.pacman);
 				this->SigQuit.Emit();
 			}
@@ -107,6 +105,9 @@ namespace prx
 	void
 	Game::handleQuit() {
 		this->database.insertScore(this->player);
+		Logger::Send(Logger::LEVEL::INFO, "%s has now %d pac-gums eaten",
+		                                  this->player.getName(),
+		                                  this->database.getTotalScore(this->player));
 		Logger::Send(Logger::LEVEL::INFO, "Quitting game ...");
 		window.close();
 		std::exit(EXIT_SUCCESS);

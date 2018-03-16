@@ -5,6 +5,8 @@
 
 #include <Database.hpp>
 
+#include <Logger.hpp>
+
 
 namespace prx
 {
@@ -12,9 +14,8 @@ namespace prx
 
 	Database::Database() {
 		sqlite3_initialize();
-		if(sqlite3_open("score.db", &this->database)) {
-			std::cout << "Cannot open score database: " << sqlite3_errmsg(this->database) << std::endl;
-		}
+		if(sqlite3_open("score.db", &this->database))
+			Logger::Send(Logger::LEVEL::ERROR, "Cannot open score database %s: ", sqlite3_errmsg(this->database));
 		this->execute("CREATE TABLE IF NOT EXISTS PLAYER(" \
 		                 "PLAYER_ID INTEGER PRIMARY KEY AUTOINCREMENT," \
 		                 "NAME      TEXT                NOT NULL);");
@@ -30,7 +31,7 @@ namespace prx
 		if(sqlite3_exec(this->database, sql_request,
 		                NULL, 0, &this->error_message) != SQLITE_OK)
 		{
-			std::cout << "SQL Error: " << this->error_message << std::endl;
+			Logger::Send(Logger::LEVEL::ERROR, "Can not execute query: %s", this->error_message);
 			sqlite3_free(this->error_message);
 		}
 	}
@@ -121,7 +122,6 @@ namespace prx
 			sqlite3_bind_int(statement, 1, player.getId());
 			sqlite3_step(statement);
 			total_score = sqlite3_column_int(statement, 0);
-			std::cout << total_score << std::endl;
 			sqlite3_finalize(statement);
 		}
 		return total_score;
