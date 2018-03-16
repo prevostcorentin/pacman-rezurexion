@@ -1,9 +1,11 @@
 ifeq ($(OS), Windows_NT)
 	CMAKE_MAKEFILE_TYPE = "MinGW Makefiles"
 	LIBS = -lsfml-main
+	LDFLAGS = -mwindows
 else
 	CMAKE_MAKEFILE_TYPE = "Unix Makefiles"
 	LIBS = -lpthread -ldl
+	LDFLAGS =
 endif
 OBJS = $(filter-out obj/main.o, $(subst src/, obj/, $(patsubst %.cpp, %.o, $(wildcard src/*.cpp))))
 LIBS += -lsfml-system -lsfml-graphics -lsfml-window
@@ -29,7 +31,7 @@ $(EXECUTABLE): $(OBJS) lib/libprx.a lib/libsqlite3.a
 	@echo Compiling statically linked version of $(EXECUTABLE)
 	$(CXX) $(CXX_FLAGS) src/main.cpp -o $(EXECUTABLE) \
 		-Iextlibs -Iextlibs/SFML/include -Iheader \
-		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ -lprx $(LIBS) -lsqlite3 -mwindows
+		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ -lprx $(LIBS) -lsqlite3 $(LDFLAGS)
 
 lib/libprx.a: $(OBJS) lib
 	@echo Linking game static library ...
