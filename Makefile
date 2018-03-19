@@ -7,7 +7,7 @@ else
 endif
 OBJS = $(filter-out obj/main.o, $(subst src/, obj/, $(patsubst %.cpp, %.o, $(wildcard src/*.cpp))))
 LIBS += -lsfml-system -lsfml-graphics -lsfml-window
-CXX_FLAGS = -g -Wall -Wno-unused-local-typedefs -std=c++0x
+CXX_FLAGS = -DSFML_STATIC -g -Wall -Wno-unused-local-typedefs -std=c++0x
 EXECUTABLE = PacmanRezurexion
 
 
@@ -23,7 +23,7 @@ $(EXECUTABLE): $(OBJS) lib/libprx.a lib/libsqlite3.a
 	@echo Compiling statically linked version of $(EXECUTABLE)
 	$(CXX) $(CXX_FLAGS) src/main.cpp -o $(EXECUTABLE) \
 		-Iextlibs -Iextlibs/SFML/include -Iheader \
-		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ $(LIBS) -lprx -lsqlite3
+		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ -lprx $(LIBS) -lsqlite3
 
 lib/libprx.a: $(OBJS) lib
 	@echo Linking game static library ...
