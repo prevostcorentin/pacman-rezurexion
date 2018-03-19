@@ -5,6 +5,7 @@
 #include <Logger.hpp>
 #include <MapLoader.hpp>
 #include <PathFinder.hpp>
+#include <TextBox.hpp>
 
 
 #define MAP_FILENAME "resources/map/simple.map"
@@ -49,23 +50,9 @@ namespace prx
 
 	void
 	Game::initPlayer() {
-		sf::Event event;
-		std::string name;
-		bool done = false;
-		while(!done)
-			while(window.pollEvent(event)) {
-				if(event.type == sf::Event::TextEntered) {
-					if(event.key.code == 8 && name.size() > 0) {
-						name.pop_back();
-					} else if(event.key.code == 13 && name.size() > 0) {
-						done = true;
-						Logger::Send(Logger::LEVEL::DEBUG, "Done");
-					} else {
-						name.push_back((char)event.text.unicode);
-						Logger::Send(Logger::LEVEL::DEBUG, "%s (%d)", name.c_str(), name.size());
-					}
-				}
-			}
+		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name",
+		                           "resources/font/pac-font.ttf", this->window);
+		std::string name(name_box.getAnswer());
 		this->player.setName(name.c_str());
 		if(not this->database.playerExists(this->player))
 			this->database.createPlayer(this->player);
@@ -75,13 +62,6 @@ namespace prx
 
 	void
 	Game::handleCollision(ObjectCollection& objects) {
-		/*
-		for(auto& o: objects.getAllObjects()) {
-			Logger::Send(Logger::LEVEL::DEBUG, "%s has collided at (%d, %d)", o->getType(),
-			                                                                  o->map_position.x,
-			                                                                  o->map_position.y);
-		}
-		*/
 		if(objects.hasObjectOfType("pacman")) {
 			if(objects.hasObjectOfType("pac_gum")) {
 				for(auto& gum: objects.getObjectsOfType("pac_gum")) {
