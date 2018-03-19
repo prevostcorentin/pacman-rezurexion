@@ -5,7 +5,9 @@ namespace prx
 {
 
 
-	Map::Map(ObjectCollection *oc)  : objects(oc)
+	Map::Map(sf::Vector2f dimensions, ObjectCollection *oc)  : objects(oc),
+	                                                           width(dimensions.x),
+	                                                           height(dimensions.y)
 	{ }
 
 	ObjectCollection

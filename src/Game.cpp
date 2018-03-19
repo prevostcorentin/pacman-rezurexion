@@ -7,16 +7,20 @@
 #include <PathFinder.hpp>
 
 
+#define MAP_FILENAME "resources/map/simple.map"
+
+
 namespace prx
 {
 
 
-	Game::Game(sf::ContextSettings context) : window(sf::VideoMode(640, 480),
+	Game::Game(sf::ContextSettings context) : direction(Right),
+	                                          window(sf::VideoMode(640, 480),
 	                                                 GAME_TITLE,
 	                                                 sf::Style::Default,
 	                                                 context),
-	                                          objects(GetGameObjectsFromFilename("resources/map/simple.map")),
-	                                          map(objects),
+	                                          objects(GetGameObjectsFromFilename(MAP_FILENAME)),
+	                                          map(GetDimensionsFromFilename(MAP_FILENAME), objects),
 	                                          screen(window, map),
 	                                          spinner(window),
 	                                          collision_tracker(map)
@@ -45,10 +49,24 @@ namespace prx
 
 	void
 	Game::initPlayer() {
-		std::string choosen_name;
-		std::cout << "Player name:";
-		std::cin >> choosen_name;
-		this->player.setName(choosen_name.c_str());
+		sf::Event event;
+		std::string name;
+		bool done = false;
+		while(!done)
+			while(window.pollEvent(event)) {
+				if(event.type == sf::Event::TextEntered) {
+					if(event.key.code == 8 && name.size() > 0) {
+						name.pop_back();
+					} else if(event.key.code == 13 && name.size() > 0) {
+						done = true;
+						Logger::Send(Logger::LEVEL::DEBUG, "Done");
+					} else {
+						name.push_back((char)event.text.unicode);
+						Logger::Send(Logger::LEVEL::DEBUG, "%s (%d)", name.c_str(), name.size());
+					}
+				}
+			}
+		this->player.setName(name.c_str());
 		if(not this->database.playerExists(this->player))
 			this->database.createPlayer(this->player);
 		else
@@ -57,11 +75,13 @@ namespace prx
 
 	void
 	Game::handleCollision(ObjectCollection& objects) {
+		/*
 		for(auto& o: objects.getAllObjects()) {
 			Logger::Send(Logger::LEVEL::DEBUG, "%s has collided at (%d, %d)", o->getType(),
 			                                                                  o->map_position.x,
 			                                                                  o->map_position.y);
 		}
+		*/
 		if(objects.hasObjectOfType("pacman")) {
 			if(objects.hasObjectOfType("pac_gum")) {
 				for(auto& gum: objects.getObjectsOfType("pac_gum")) {
@@ -81,14 +101,25 @@ namespace prx
 
 	void
 	Game::handleUpdate() {
+		sf::Vector2f new_position;
 		this->keyboard.dispatchLastMoves();
+		// Update ghost path to pacman
 		for(auto& ghost: this->objects->getObjectsOfType(object_type<Ghost>::name()))
-			ghost->map_position =
-				PathFinder::GetNearestShortestPosition(
-					ghost->map_position,
-					this->player.pacman->map_position,
-					this->map
-				);
+			ghost->map_position = PathFinder::GetNearestShortestPosition(ghost->map_position,
+			                                                             this->player.pacman->map_position,
+			                                                             this->map);
+		// Update pacman position
+		if(this->direction == Right)
+				new_position = sf::Vector2f(this->player.pacman->map_position.x + 1, this->player.pacman->map_position.y);
+		else if(this->direction == Left)
+				new_position = sf::Vector2f(this->player.pacman->map_position.x - 1, this->player.pacman->map_position.y);
+		else if(this->direction == Down)
+				new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y + 1);
+		else if(this->direction == Up)
+				new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y - 1);
+		// Stop Pacman if moving out of screen or position unreachable
+		if(this->collision_tracker.objectCanMoveTo(this->player.pacman, new_position))
+			this->player.pacman->map_position = new_position;
 		this->collision_tracker.dispatchLastCollisions();
 		this->screen.draw();
 	}
@@ -96,7 +127,7 @@ namespace prx
 	void
 	Game::handleQuit() {
 		this->database.insertScore(this->player);
-		std::cout << "Quitting game" << std::endl;
+		Logger::Send(Logger::LEVEL::INFO, "Quitting game ...");
 		window.close();
 		std::exit(EXIT_SUCCESS);
 	}
@@ -105,29 +136,7 @@ namespace prx
 	Game::handlePlayerMove(enum Direction direction)
 	{
 		sf::Vector2f new_position;
-		switch(direction) {
-			case Right:
-				new_position = sf::Vector2f(this->player.pacman->map_position.x + 1,
-				                            this->player.pacman->map_position.y);
-			break;
-			case Left:
-				new_position = sf::Vector2f(this->player.pacman->map_position.x - 1,
-				                            this->player.pacman->map_position.y);
-			break;
-			case Down:
-				new_position = sf::Vector2f(this->player.pacman->map_position.x,
-				                            this->player.pacman->map_position.y + 1);
-			break;
-			case Up:
-				new_position = sf::Vector2f(this->player.pacman->map_position.x,
-				                            this->player.pacman->map_position.y - 1);
-			break;
-		}
-		if(this->collision_tracker.objectCanMoveTo(this->player.pacman,
-		                                           new_position))
-		{
-			this->player.pacman->map_position = new_position;
-		}
+		this->direction = direction;
 	}
 
 

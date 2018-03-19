@@ -39,6 +39,7 @@ namespace prx
 			void handleQuit();
 			void handlePlayerMove(enum Direction direction);
 
+			enum Direction direction;
 			enum GameState state;
 			Keyboard keyboard;
 			sf::RenderWindow window;

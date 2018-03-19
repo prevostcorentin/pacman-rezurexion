@@ -22,6 +22,7 @@ namespace prx
 
 
 	ObjectCollection* GetGameObjectsFromFilename(const char *filename);
+	sf::Vector2f GetDimensionsFromFilename(const char *filename);
 
 	namespace MapFile
 	{
@@ -37,11 +38,11 @@ namespace prx
 			WrongHeader = 100,
 			WrongHeight,
 			WrongWidth,
-			NoPlayer
 		};
 
-		enum ERROR get_last_error(std::istream&);
-		header_t _extract_header(std::istream&);
+		enum ERROR get_last_error(std::ifstream&);
+		header_t _extract_header(std::ifstream&);
+		const char* strerror(ERROR code);
 
 
 	}
