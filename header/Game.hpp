@@ -24,24 +24,28 @@ namespace prx
 {
 
 
-	enum GameState { Init, Running, Error, Stopped };
+	enum GAME_STATE { INIT, RUNNING, ERROR, STOPPED };
+
 	class Game
 	{
+
 		public:
 			Game(sf::ContextSettings context);
 			void launch();
+
 			Gallant::Signal0<void> SigQuit;
 
 		private:
-			void initPlayer();
 			void handleCollision(ObjectCollection& objects);
-			void handleUpdate();
+			void handlePlayerDirectionUpdate(const enum DIRECTION);
+			void handlePlayerMove();
 			void handleQuit();
-			void handlePlayerMove(enum Direction direction);
+			void handleUpdate();
+			void initPlayer();
 
-			enum Direction direction;
-			enum GameState state;
+			enum GAME_STATE state;
 			Keyboard keyboard;
+
 			sf::RenderWindow window;
 			ObjectCollection* objects;
 			Map map;
@@ -50,6 +54,7 @@ namespace prx
 			CollisionTracker collision_tracker;
 			Database database;
 			Player player;
+
 	};
 
 

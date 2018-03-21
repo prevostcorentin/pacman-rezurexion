@@ -20,7 +20,7 @@ namespace prx
 			CollisionTracker(Map& m);
 			Gallant::Signal1<ObjectCollection&> SigCollision;
 			void dispatchLastCollisions();
-			bool objectCanMoveTo(Object *o, const enum Direction);
+			bool objectCanMoveTo(Object *o, const enum DIRECTION);
 			bool objectCanMoveTo(Object *o, const sf::Vector2f& position);
 
 		private:

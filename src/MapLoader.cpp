@@ -11,9 +11,6 @@
 #include <SFML/System.hpp>
 
 
-
-
-
 namespace prx
 {
 
@@ -30,32 +27,24 @@ namespace prx
 		Logger::Send(Logger::LEVEL::INFO, "Loading map from file %s", filename);
 		ObjectCollection *objects = new ObjectCollection();
 		std::ifstream fstream(filename);
-		/*
-		if(MapFile::get_last_error(fstream)) {
-			Logger::Send(Logger::LEVEL::ERROR, "%s -> Can not load %s\n", MapFile::strerror(MapFile::get_last_error(fstream)), filename);
-			return nullptr;
-		}
-		*/
 		MapFile::header_t header = MapFile::_extract_header(fstream);
-		// skip header
 		std::string line;
-		std::getline(fstream, line);
+		std::getline(fstream, line); // skip header
 		for(int y=0; y < header.map_height; y++) {
 			std::getline(fstream, line);
 			for(int x=0; x < header.map_width; x++) {
-				if(line[x] == '*') {
+				if(line[x] == '*' or line[x] == 'G')
 					objects->add(new PacGum(sf::Vector2f(x, y)));
-				} else if(line[x] == '-' or line[x] == '|') {
-					objects->add(new Wall(sf::Vector2f(x, y)));
-				} else if(line[x] == 'G') {
-					objects->add(new PacGum(sf::Vector2f(x, y)));
+				else if(line[x] == '-') 
+					objects->add(new Wall(sf::Vector2f(x, y), RIGHT));
+				else if(line[x] == '|')
+					objects->add(new Wall(sf::Vector2f(x, y), DOWN));
+				if(line[x] == 'G')
 					objects->add(new Ghost(sf::Vector2f(x, y)));
-				}
 			}
 		}
 		return objects;
 	}
-
 
 	enum MapFile::ERROR MapFile::get_last_error(std::ifstream& fstream) {
 		MapFile::header_t header = MapFile::_extract_header(fstream);

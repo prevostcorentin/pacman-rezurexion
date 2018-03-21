@@ -13,8 +13,7 @@ namespace prx
 {
 
 
-	Game::Game(sf::ContextSettings context) : direction(Right),
-	                                          window(sf::VideoMode(640, 480),
+	Game::Game(sf::ContextSettings context) : window(sf::VideoMode(640, 480),
 	                                                 GAME_TITLE,
 	                                                 sf::Style::Default,
 	                                                 context),
@@ -24,15 +23,17 @@ namespace prx
 	                                          spinner(window),
 	                                          collision_tracker(map)
 	{
-		this->state = Init;
-		// Connect signals to handlers
+		this->state = INIT;
+
 		this->collision_tracker.SigCollision.Connect(this, &Game::handleCollision);
-		this->keyboard.SigPlayerMove.Connect(this, &Game::handlePlayerMove);
+		this->keyboard.SigPlayerMove.Connect(this, &Game::handlePlayerDirectionUpdate);
 		this->keyboard.SigQuit.Connect(this, &Game::handleQuit);
 		this->SigQuit.Connect(this, &Game::handleQuit);
+		this->spinner.SigTick.Connect(this, &Game::handlePlayerMove);
 		this->spinner.SigTick.Connect(this, &Game::handleUpdate);
 		this->player.pacman->map_position = sf::Vector2f(0, 0);
-		// Adding player to game
+
+		this->player.direction = RIGHT;
 		this->objects->add(this->player.pacman);
 		this->window.setActive();
 	}
@@ -40,10 +41,25 @@ namespace prx
 	void
 	Game::launch() {
 		this->initPlayer();
-		this->state = Running;
+		this->state = RUNNING;
 		while(this->window.isOpen())
 			spinner.run();
 		std::exit(EXIT_FAILURE);
+	}
+
+	void
+	Game::handlePlayerMove() {
+		sf::Vector2f new_position;
+		if(this->player.direction == RIGHT)
+			new_position = sf::Vector2f(this->player.pacman->map_position.x + 1, this->player.pacman->map_position.y);
+		else if(this->player.direction == LEFT)
+			new_position = sf::Vector2f(this->player.pacman->map_position.x - 1, this->player.pacman->map_position.y);
+		else if(this->player.direction == DOWN)
+			new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y + 1);
+		else if(this->player.direction == UP)
+			new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y - 1);
+		if(this->collision_tracker.objectCanMoveTo(this->player.pacman, new_position))
+			this->player.pacman->map_position = new_position;
 	}
 
 	void
@@ -79,23 +95,11 @@ namespace prx
 	Game::handleUpdate() {
 		sf::Vector2f new_position;
 		this->keyboard.dispatchLastMoves();
-		// Update ghost path to pacman
+		// Update path to pacman
 		for(auto& ghost: this->objects->getObjectsOfType(object_type<Ghost>::name()))
 			ghost->map_position = PathFinder::GetNearestShortestPosition(ghost->map_position,
 			                                                             this->player.pacman->map_position,
 			                                                             this->map);
-		// Update pacman position
-		if(this->direction == Right)
-				new_position = sf::Vector2f(this->player.pacman->map_position.x + 1, this->player.pacman->map_position.y);
-		else if(this->direction == Left)
-				new_position = sf::Vector2f(this->player.pacman->map_position.x - 1, this->player.pacman->map_position.y);
-		else if(this->direction == Down)
-				new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y + 1);
-		else if(this->direction == Up)
-				new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y - 1);
-		// Stop Pacman if moving out of screen or position unreachable
-		if(this->collision_tracker.objectCanMoveTo(this->player.pacman, new_position))
-			this->player.pacman->map_position = new_position;
 		this->collision_tracker.dispatchLastCollisions();
 		this->screen.draw();
 	}
@@ -112,10 +116,9 @@ namespace prx
 	}
 
 	void
-	Game::handlePlayerMove(enum Direction direction)
-	{
+	Game::handlePlayerDirectionUpdate(const enum DIRECTION direction) {
 		sf::Vector2f new_position;
-		this->direction = direction;
+		this->player.direction = direction;
 	}
 
 
