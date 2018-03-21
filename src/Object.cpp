@@ -30,7 +30,6 @@ namespace prx
 		static int frame_index=0;
 		this->setFrame(direction, (frame_index % this->frames_count));
 		frame_index++;
-		Logger::Send(Logger::LEVEL::DEBUG, "Moving object to next frame (%d)", frame_index);
 	}
 
 	void
