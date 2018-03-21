@@ -1,7 +1,5 @@
-[submodule "include/SFML"]
-	path = include/SFML
-	url = https://github.com/SFML/SFML
 [submodule "extlibs/Signals"]
+	ignore = dirty
 	path = extlibs/Signals
 	url = https://github.com/pbhogan/Signals
 [submodule "extlibs/SFML"]

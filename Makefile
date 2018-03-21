@@ -1,6 +1,6 @@
 ifeq ($(OS), Windows_NT)
 	CMAKE_MAKEFILE_TYPE = "MinGW Makefiles"
-	LIBS = -lsfml-main
+	LIBS = -lsfml-main -mwindows
 else
 	CMAKE_MAKEFILE_TYPE = "Unix Makefiles"
 	LIBS = -lpthread -ldl
@@ -56,7 +56,8 @@ obj/extlibs/sqlite3/sqlite3.o:
 
 SFML: lib
 	cd extlibs/SFML; cmake -G$(CMAKE_MAKEFILE_TYPE); make
-	cp extlibs/SFML/lib/* $<
+	cp extlibs/SFML/lib/*.dll .
+	cp extlibs/SFML/lib/*.a $<
 
 lib:
 	mkdir $@
