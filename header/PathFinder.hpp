@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <SFML/System.hpp>
+#include <SFML/System/Vector2.hpp>
 
 #include <Map.hpp>
 

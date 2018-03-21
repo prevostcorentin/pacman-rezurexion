@@ -1,7 +1,7 @@
 #ifndef SCREEN_INCLUDED
 #define SCREEN_INCLUDED
 
-#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include <Map.hpp>
 

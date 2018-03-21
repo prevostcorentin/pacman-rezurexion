@@ -1,7 +1,6 @@
 #include <CollisionTracker.hpp>
 
-#include <iostream>
-
+#include <Logger.hpp>
 #include <Object.hpp>
 
 
@@ -59,11 +58,7 @@ namespace prx
 		   (position.x >= this->map.width or position.y >= this->map.height) or
 		   (objects_on_cell.hasObjectOfType("wall")))
 		{
-			#ifdef DEBUG
-			std::cout << o->getType() << " can not move from [" <<
-			             o->map_position.x << ", " << o->map_position.y << "] to [" <<
-			             position.x << ", " << position.y << "]" << std::endl;
-			#endif
+			Logger::Send(Logger::LEVEL::DEBUG, "%s can not move from %v to %v", o->getType().c_str(), o->map_position, position);
 			return false;
 		} else {
 			return true;

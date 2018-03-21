@@ -6,12 +6,7 @@
 #include <PacGum.hpp>
 #include <Wall.hpp>
 
-#include <cctype>
-#include <iostream>
-#include <iterator>
 #include <fstream>
-#include <sstream>
-#include <cstdlib>
 
 #include <SFML/System.hpp>
 
@@ -21,6 +16,7 @@
 
 namespace prx
 {
+
 
 	sf::Vector2f 
 	GetDimensionsFromFilename(const char *filename) {

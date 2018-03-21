@@ -103,10 +103,7 @@ namespace prx
 			if(sqlite3_step(statement) == SQLITE_ROW) {
 				player.setId(sqlite3_column_int(statement, 0));
 				player.setName((const char*) sqlite3_column_text(statement, 1));
-				#ifdef DEBUG
-				std::cout << "Name: " << player.getName() <<
-				             "\tId: " << player.getId() << std::endl;
-				#endif
+				Logger::Send(Logger::LEVEL::DEBUG, "Player from database:\nName: %s\tId: %d", player.getName(), player.getId());
 			}
 			sqlite3_finalize(statement);
 		}

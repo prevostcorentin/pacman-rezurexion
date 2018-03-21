@@ -22,7 +22,11 @@ namespace prx
 				else if(*it == 'c')
 					output << static_cast<char>(va_arg(args, int));
 				else if(*it == 'd')
-					output << va_arg(args, int);
+					output << std::to_string(va_arg(args, int));
+				else if(*it == 'v') {
+					sf::Vector2f v = va_arg(args, sf::Vector2f);
+					output << "[" << v.x << ", " << v.y << "]";
+				}
 				// If the format chain type specifier is the last character in the input stream,
 				// incrementing iterator leads to segmentation fault when inserting it in the
 				// output stream.
@@ -33,16 +37,15 @@ namespace prx
 			}
 			output << *it;
 		}
-		if(level == WARNING) {
-			std::cout << "WARNING: " << output.str() << std::endl;
-		} else if(level == ERROR) {
-				std::cout << "ERROR: " << output.str() << std::endl;
-		} else if(level == DEBUG) {
-			std::cout << "DEBUG: " << output.str() << std::endl;
-		} else if(level == INFO) {
-			std::cout << "INFO: " << output.str() << std::endl;
-		}
 		va_end(args);
+		if(level == WARNING)
+			std::cout << "WARNING: " << output.str() << std::endl;
+		else if(level == ERROR)
+			std::cout << "ERROR: " << output.str() << std::endl;
+		else if(level == DEBUG)
+			std::cout << "DEBUG: " << output.str() << std::endl;
+		else if(level == INFO)
+			std::cout << "INFO: " << output.str() << std::endl;
 	}
 
 

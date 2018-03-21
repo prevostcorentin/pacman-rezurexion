@@ -1,9 +1,5 @@
 #include <Player.hpp>
 
-#include <iostream>
-
-#include <SFML/System.hpp>
-
 
 namespace prx
 {

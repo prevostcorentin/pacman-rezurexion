@@ -19,7 +19,7 @@ namespace prx
 			Logger::Send(Logger::LEVEL::ERROR, "Can not load font");
 		this->text.setFont(this->font);
 		this->text.setCharacterSize(24);
-		this->text.setColor(sf::Color::Yellow);
+		this->text.setFillColor(sf::Color::Yellow);
 		this->text.setStyle(sf::Text::Bold | sf::Text::Underlined);
 		this->text.setString(this->text.getString() + " : ");
 		this->label = this->label + " : ";
@@ -48,7 +48,6 @@ namespace prx
 					else                                                    // Other characters
 						this->answer.push_back((char)event.text.unicode);
 					this->text.setString(this->label + sf::String(this->answer));
-					Logger::Send(Logger::LEVEL::DEBUG, "%s", this->text.getString().toAnsiString().c_str());
 				}
 			}
 		return this->answer;

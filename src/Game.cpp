@@ -1,12 +1,10 @@
-#include <iostream>
-
 #include <Game.hpp>
+
 #include <Ghost.hpp>
 #include <Logger.hpp>
 #include <MapLoader.hpp>
 #include <PathFinder.hpp>
 #include <TextBox.hpp>
-
 
 #define MAP_FILENAME "resources/map/simple.map"
 

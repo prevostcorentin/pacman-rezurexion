@@ -1,6 +1,6 @@
-#include <iostream>
-
 #include <ObjectCollection.hpp>
+
+#include <Logger.hpp>
 
 
 namespace prx
@@ -57,7 +57,7 @@ namespace prx
 		if(object_position != this->objects.end())
 			this->objects.erase(object_position);
 		else
-			std::cout << "Object does not exist" << std::endl;
+			Logger::Send(Logger::LEVEL::ERROR, "Can not erase: Object (%s) does not exist", o->getType().c_str());
 	}
 
 

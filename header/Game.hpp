@@ -4,7 +4,7 @@
 #include <Signals/Delegate.h>
 #include <Signals/Signal.h>
 
-#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include <CollisionTracker.hpp>
 #include <CPUSpinner.hpp>

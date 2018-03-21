@@ -1,11 +1,12 @@
-#include <exception>
-#include <iostream>
+#include <Game.hpp>
 
-#include <SFML/Window.hpp>
+#include <SFML/Window/ContextSettings.hpp>
 
 #include <Signals/Delegate.h>
 
-#include <Game.hpp>
+#include <exception>
+#include <iostream>
+
 
 
 

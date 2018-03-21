@@ -1,7 +1,7 @@
+#include <CPUSpinner.hpp>
+
 #include <SFML/System/Sleep.hpp>
 #include <SFML/Window/Event.hpp>
-
-#include <CPUSpinner.hpp>
 
 
 namespace prx

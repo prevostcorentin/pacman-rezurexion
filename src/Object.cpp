@@ -1,6 +1,6 @@
-#include <iostream>
-
 #include <Object.hpp>
+
+#include <Logger.hpp>
 
 
 namespace prx
@@ -11,10 +11,10 @@ namespace prx
 		this->map_position = position;
 		sf::Color color(255, 255, 255, 255);
 		if(!this->image.loadFromFile(sprite_sheet_filepath))
-			std::cout << "Unable to load sprite sheet: " << sprite_sheet_filepath << std::endl;
+			Logger::Send(Logger::LEVEL::ERROR, "Unable to load sprite sheet (%s)", sprite_sheet_filepath);
 		this->image.createMaskFromColor(color, 0);
 		if(!this->texture.loadFromImage(this->image))
-			std::cout << "Unable to create texture from " << sprite_sheet_filepath << std::endl;
+			Logger::Send(Logger::LEVEL::ERROR, "Unable to create texture (%s)", sprite_sheet_filepath);
 		this->sprite.setTexture(this->texture);
 		this->sprite.setPosition(0, 0);
 		// Resizing by half
