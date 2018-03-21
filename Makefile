@@ -1,6 +1,6 @@
 ifeq ($(OS), Windows_NT)
 	CMAKE_MAKEFILE_TYPE = "MinGW Makefiles"
-	LIBS = -lsfml-main -mwindows
+	LIBS = -lsfml-main
 else
 	CMAKE_MAKEFILE_TYPE = "Unix Makefiles"
 	LIBS = -lpthread -ldl
@@ -11,7 +11,7 @@ CXX_FLAGS = -DSFML_STATIC -g -Wall -Wno-unused-local-typedefs -std=c++0x
 EXECUTABLE = PacmanRezurexion
 
 
-.SILENT: $(OBJS) $(EXECUTABLE) lib/libprx.a exe-without-lib
+.SILENT: $(OBJS) $(EXECUTABLE) debug-exe lib/libprx.a exe-without-lib
 
 
 init: obj $(EXECUTABLE)
@@ -19,11 +19,17 @@ init: obj $(EXECUTABLE)
 obj:
 	mkdir $@
 
+debug-exe: $(OBJS) lib/libprx.a lib/libsqlite3.a
+	@echo Compiling debug version of $(EXECUTABLE)
+	$(CXX) $(CXX_FLAGS) src/main.cpp -o $(EXECUTABLE) \
+		-Iextlibs -Iextlibs/SFML/include -Iheader \
+		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ -lprx $(LIBS) -lsqlite3
+
 $(EXECUTABLE): $(OBJS) lib/libprx.a lib/libsqlite3.a
 	@echo Compiling statically linked version of $(EXECUTABLE)
 	$(CXX) $(CXX_FLAGS) src/main.cpp -o $(EXECUTABLE) \
 		-Iextlibs -Iextlibs/SFML/include -Iheader \
-		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ -lprx $(LIBS) -lsqlite3
+		-Lextlibs/SFML/lib -Llib -Llib/extlibs/ -lprx $(LIBS) -lsqlite3 -mwindows
 
 lib/libprx.a: $(OBJS) lib
 	@echo Linking game static library ...
