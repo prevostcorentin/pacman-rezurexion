@@ -20,8 +20,8 @@ namespace prx
 
 		public:
 			Object(sf::Vector2f position, const char *sprite_sheet_filepath);
-			void setFrame(const enum DIRECTION direction, int n);
-			void move(enum DIRECTION);
+			void nextFrame(const enum DIRECTION);
+			void setFrame(const enum DIRECTION, int frame_index);
 			virtual const std::string getType() {
 				return object_type<Object>::name();
 			}
@@ -30,6 +30,7 @@ namespace prx
 			sf::Vector2f map_position;
 
 		protected:
+			unsigned int frames_count;
 			sf::Image image;
 			sf::Texture texture;
 			sf::Sprite sprite;
