@@ -19,15 +19,6 @@ namespace prx
 			position.x = position.x + 1;
 		else if(end.y > begin.y)
 			position.y = position.y + 1;
-		ObjectCollection cell = map.getCell(position.x, position.y);
-		if(// out of bounds
-		   position.x < 0 || position.x >= map.width ||
-		   position.y < 0 || position.y >= map.height ||
-		   // cell unreachable
-		   cell.hasObjectOfType(object_type<Wall>::name()))
-		{
-			return begin;
-		}
 		return position;
 	}
 

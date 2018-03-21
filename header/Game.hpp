@@ -17,6 +17,7 @@
 #include <Screen.hpp>
 #include <Wall.hpp>
 
+
 #define GAME_TITLE "Pacman Rezurexion"
 
 
@@ -42,6 +43,7 @@ namespace prx
 			void handleQuit();
 			void handleUpdate();
 			void initPlayer();
+			void updateGhostsPaths();
 
 			enum GAME_STATE state;
 			Keyboard keyboard;

@@ -46,7 +46,6 @@ namespace prx
 		   (position.x >= this->map.width or position.y >= this->map.height) or
 		   (objects_on_cell.hasObjectOfType("wall")))
 		{
-			Logger::Send(Logger::LEVEL::DEBUG, "%s can not move from %v to %v", o->getType().c_str(), o->map_position, position);
 			return false;
 		} else {
 			return true;

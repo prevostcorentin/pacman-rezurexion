@@ -96,12 +96,19 @@ namespace prx
 		sf::Vector2f new_position;
 		this->keyboard.dispatchLastMoves();
 		// Update path to pacman
-		for(auto& ghost: this->objects->getObjectsOfType(object_type<Ghost>::name()))
-			ghost->map_position = PathFinder::GetNearestShortestPosition(ghost->map_position,
-			                                                             this->player.pacman->map_position,
-			                                                             this->map);
+		this->updateGhostsPaths();
 		this->collision_tracker.dispatchLastCollisions();
 		this->screen.draw();
+	}
+
+	void
+	Game::updateGhostsPaths() {
+		sf::Vector2f new_position;
+		for(auto& ghost: this->objects->getObjectsOfType(object_type<Ghost>::name())) {
+			new_position = PathFinder::GetNearestShortestPosition(ghost->map_position, this->player.pacman->map_position, this->map);
+			if(this->collision_tracker.objectCanMoveTo(ghost, new_position))
+				ghost->map_position = new_position;
+		}
 	}
 
 	void
