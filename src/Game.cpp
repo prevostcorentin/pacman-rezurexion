@@ -84,9 +84,8 @@ namespace prx
 					this->player.setScore(1 + this->player.getScore());
 					this->objects->erase(gum);
 				}
-			} else if(objects.hasObjectOfType("ghost")) {
-				Logger::Send(Logger::LEVEL::INFO, "%s dies with %d pac-gum(s) eaten", this->player.getName(),
-				                                                         this->player.getScore());
+			}
+			if(objects.hasObjectOfType("ghost")) {
 				this->objects->erase(this->player.pacman);
 				this->SigQuit.Emit();
 			}
@@ -97,7 +96,6 @@ namespace prx
 	Game::handleUpdate() {
 		sf::Vector2f new_position;
 		this->keyboard.dispatchLastMoves();
-		// Update path to pacman
 		this->updateGhostsPaths();
 		this->collision_tracker.dispatchLastCollisions();
 		this->screen.draw();
