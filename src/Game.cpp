@@ -6,6 +6,7 @@
 #include <PathFinder.hpp>
 #include <TextBox.hpp>
 
+
 #define MAP_FILENAME "resources/map/simple.map"
 
 
@@ -58,6 +59,7 @@ namespace prx
 			new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y + 1);
 		else if(this->player.direction == UP)
 			new_position = sf::Vector2f(this->player.pacman->map_position.x, this->player.pacman->map_position.y - 1);
+		this->player.nextFrame();
 		if(this->collision_tracker.objectCanMoveTo(this->player.pacman, new_position))
 			this->player.pacman->map_position = new_position;
 	}
