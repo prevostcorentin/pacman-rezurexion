@@ -15,7 +15,8 @@ namespace prx
 
 		public:
 			Wall(sf::Vector2f position, enum DIRECTION);
-			const std::string getType();
+			virtual const std::string getType() const;
+
 	};
 
 

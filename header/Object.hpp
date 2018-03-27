@@ -1,7 +1,7 @@
 #ifndef OBJECT_INCLUDED
 #define OBJECT_INCLUDED
 
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
@@ -9,31 +9,27 @@
 namespace prx
 {
 
+
 	enum DIRECTION { RIGHT=0, LEFT=1, DOWN=2, UP=3 };
 
 	template<typename T> struct object_type {
-		static const char* name() { return "undefined"; }
+		static const std::string name() { return std::string("undefined"); }
 	};
 
-	class Object
+	class Object : public sf::Sprite
 	{
 
 		public:
 			Object(sf::Vector2f position, const char *sprite_sheet_filepath);
-			void nextFrame(const enum DIRECTION);
-			void setFrame(const enum DIRECTION, int frame_index);
-			virtual const std::string getType() {
-				return object_type<Object>::name();
-			}
-			sf::Sprite* getSprite();
-
-			sf::Vector2f map_position;
+			void nextFrame();
+			virtual const std::string getType() const;
+			void setDirection(const enum DIRECTION);
 
 		protected:
-			unsigned int frames_count;
+			enum DIRECTION direction=RIGHT;
 			sf::Image image;
 			sf::Texture texture;
-			sf::Sprite sprite;
+			unsigned int frames_count;
 
 	};
 

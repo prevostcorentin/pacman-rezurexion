@@ -9,7 +9,7 @@ namespace prx
 	{ }
 
 	const std::string
-	Pacman::getType() {
+	Pacman::getType() const {
 		return object_type<Pacman>::name();
 	}
 

@@ -7,19 +7,19 @@ namespace prx
 {
 
 
-	sf::Vector2f
-	PathFinder::GetNearestShortestPosition(sf::Vector2f& begin, sf::Vector2f& end, Map& map) {
-		sf::Vector2f position;
-		position.x = begin.x, position.y = begin.y;
-		if(end.y < begin.y)
-			position.y = position.y - 1;
-		else if(end.x < begin.x)
-			position.x = position.x - 1;
-		else if(end.x > begin.x)
-			position.x = position.x + 1;
-		else if(end.y > begin.y)
-			position.y = position.y + 1;
-		return position;
+	const enum DIRECTION
+	PathFinder::GetNearestShortestDirection(Object* begin, Object* end, Map& map) {
+		sf::Vector2f begin_position = begin->getPosition();
+		sf::Vector2f end_position = end->getPosition();
+		if(end_position.y > begin_position.y)
+			return DIRECTION::DOWN;
+		else if(end_position.x < begin_position.x)
+			return DIRECTION::LEFT;
+		else if(end_position.x > begin_position.x)
+			return DIRECTION::RIGHT;
+		else if(end_position.y < begin_position.y)
+			return DIRECTION::UP;
+		return DIRECTION::RIGHT;
 	}
 
 

@@ -20,11 +20,13 @@ namespace prx
 			if(*it == '%') {
 				it++;
 				if(*it == 's')
-					output << va_arg(args, char*);
+					output << std::string(va_arg(args, char*));
 				else if(*it == 'c')
 					output << static_cast<char>(va_arg(args, int));
 				else if(*it == 'd')
 					output << std::to_string(va_arg(args, int));
+				else if(*it == 'p')
+					output << va_arg(args, void*);
 				else if(*it == 'v') {
 					sf::Vector2f v = va_arg(args, sf::Vector2f);
 					output << "[" << v.x << ", " << v.y << "]";

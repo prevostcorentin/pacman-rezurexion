@@ -1,20 +1,17 @@
 #ifndef GAME_INCLUDED
 #define GAME_INCLUDED
 
-#include <Signals/Delegate.h>
-#include <Signals/Signal.h>
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Font.hpp>
 
-#include <CollisionTracker.hpp>
-#include <CPUSpinner.hpp>
 #include <Database.hpp>
-#include <Keyboard.hpp>
+#include <GameState.hpp>
 #include <Map.hpp>
+#include <Menu.hpp>
 #include <ObjectCollection.hpp>
 #include <PacGum.hpp>
 #include <Player.hpp>
-#include <Screen.hpp>
 #include <Wall.hpp>
 
 
@@ -25,37 +22,30 @@ namespace prx
 {
 
 
-	enum GAME_STATE { INIT, RUNNING, ERROR, STOPPED };
-
 	class Game
 	{
 
 		public:
-			Game(sf::ContextSettings context);
+			Game(sf::ContextSettings, sf::Font&);
 			void launch();
 
-			Gallant::Signal0<void> SigQuit;
-
 		private:
-			void handleCollision(ObjectCollection& objects);
-			void handlePlayerDirectionUpdate(const enum DIRECTION);
-			void handlePlayerMove();
-			void handleQuit();
-			void handleUpdate();
 			void initPlayer();
-			void updateGhostsPaths();
+			void moveObject(Object*);
+			void moveGhosts();
+			void quit();
+			void turn();
+			void updateCollisions();
+			void updateGame();
+			void updateState(const enum GAME_STATE);
 
 			enum GAME_STATE state;
-			Keyboard keyboard;
-
 			sf::RenderWindow window;
 			ObjectCollection* objects;
 			Map map;
-			Screen screen;
-			CPUSpinner spinner;
-			CollisionTracker collision_tracker;
 			Database database;
 			Player player;
+			GUI::Menu start_menu;
 
 	};
 

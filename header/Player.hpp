@@ -14,17 +14,14 @@ namespace prx
 	{
 		public:
 			Player();
-			~Player();
 			const int getId();
 			const char* getName();
 			int getScore();
-			void nextFrame();
 			void setId(const int);
 			void setName(const char*);
 			void setScore(const int score);
 
 			Pacman* pacman;
-			enum DIRECTION direction;
 
 		private:
 			int id;

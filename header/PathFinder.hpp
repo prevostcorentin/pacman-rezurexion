@@ -6,6 +6,7 @@
 #include <SFML/System/Vector2.hpp>
 
 #include <Map.hpp>
+#include <Object.hpp>
 
 
 
@@ -17,7 +18,7 @@ namespace prx
 	{
 
 
-		sf::Vector2f GetNearestShortestPosition(sf::Vector2f& begin, sf::Vector2f& end, Map&);
+		const enum DIRECTION GetNearestShortestDirection(Object *begin, Object *end, Map&);
 
 
 	}

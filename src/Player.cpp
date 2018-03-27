@@ -10,15 +10,6 @@ namespace prx
 	                   name("undefined")
 	{ }
 
-	Player::~Player() {
-		delete this->pacman;
-	}
-
-	void
-	Player::nextFrame() {
-		this->pacman->nextFrame(this->direction);
-	}
-
 	int
 	Player::getScore() {
 		return this->score;

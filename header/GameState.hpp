@@ -1,0 +1,15 @@
+#ifndef GAMESTATE_INCLUDED
+#define GAMESTATE_INCLUDED
+
+
+namespace prx
+{
+
+
+	enum GAME_STATE { INIT, STARTING, RUNNING, ERROR, MENU, STOPPED, NO_STATE=-1 };
+
+
+}
+
+
+#endif

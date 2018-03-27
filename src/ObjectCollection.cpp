@@ -30,9 +30,9 @@ namespace prx
 	bool
 	ObjectCollection::hasObjectOfType(std::string _typename) {
 		return std::find_if(this->objects.begin(), this->objects.end(),
-								  [_typename](Object *o) {
-									  return o->getType() == _typename;
-								  }) != this->objects.end();
+		                    [_typename](Object *o) {
+		                        return o->getType() == _typename;
+		                    }) != this->objects.end();
 	}
 
 	std::vector<Object*>
@@ -40,9 +40,9 @@ namespace prx
 		std::vector<Object*> objects_of_type;
 		std::vector<Object*>::iterator object_position = this->objects.begin();
 		while((object_position = std::find_if(object_position, this->objects.end(),
-				 [_typename](Object *o) {
-					 return o->getType() == _typename;
-				 })) != this->objects.end())
+		      [_typename](Object *o) {
+		          return o->getType() == _typename;
+		      })) != this->objects.end())
 		{
 			objects_of_type.push_back(*object_position);
 			object_position++;
@@ -52,12 +52,11 @@ namespace prx
 
 	void
 	ObjectCollection::erase(Object *o) {
-		const std::vector<Object*>::iterator object_position =
-			std::find(this->objects.begin(), this->objects.end(), o);
+		const std::vector<Object*>::iterator object_position = std::find(this->objects.begin(), this->objects.end(), o);
 		if(object_position != this->objects.end())
 			this->objects.erase(object_position);
 		else
-			Logger::Send(Logger::LEVEL::ERROR, "Can not erase: Object (%s) does not exist", o->getType().c_str());
+			Logger::Send(Logger::LEVEL::ERROR, "Can not erase: %s@%p does not exist", o->getType().c_str(), o);
 	}
 
 

@@ -9,7 +9,7 @@ namespace prx
 	{ }
 
 	const std::string
-	PacGum::getType() {
+	PacGum::getType() const {
 		return object_type<PacGum>::name();
 	}
 
