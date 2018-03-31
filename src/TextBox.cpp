@@ -37,7 +37,7 @@ namespace prx
 	std::string
 	GUI::InputTextBox::giveAnswer(sf::RenderWindow& window) {
 		sf::Event event;
-		while(not this->hasFinished())
+		while(not this->finished)
 			while(window.pollEvent(event)) {
 				this->handleEvent(event);
 				window.clear();

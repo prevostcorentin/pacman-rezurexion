@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-#define MAP_FILENAME "resources/map/hardcore.map"
+#define MAP_FILENAME "resources/map/corner_test.map"
 
 
 namespace prx
@@ -26,14 +26,13 @@ namespace prx
 	                                                             GAME_TITLE,
 	                                                             sf::Style::Default,
 	                                                             context),
-	                                                         objects(GetGameObjectsFromFilename(MAP_FILENAME)),
-	                                                         map(GetDimensionsFromFilename(MAP_FILENAME)),
+	                                                         map(MAP_FILENAME),
 	                                                         start_menu(font)
 	{
 		this->state = INIT;
 
+		this->objects = this->map.getObjects();
 		this->objects->add(this->player.pacman);
-		this->map.setObjects(this->objects);
 
 		this->start_menu.addEntry(sf::String("Play"), RUNNING);
 		this->start_menu.addEntry(sf::String("Scores"), ERROR);
@@ -56,24 +55,12 @@ namespace prx
 			this->turn();
 			this->window.clear();
 			this->window.draw(this->map);
+			this->window.display();
 		} else if(this->state == STARTING) {
 			this->state = this->start_menu.giveState(this->window);
 			if(this->state == RUNNING)
 				this->initPlayer();
 		}
-		this->window.display();
-	}
-
-	void
-	Game::initPlayer() {
-		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name", "resources/font/pac-font.ttf", sf::Color::Yellow);
-		std::string name = name_box.giveAnswer(this->window);
-
-		this->player.setName(name.c_str());
-		if(not this->database.playerExists(this->player))
-			this->database.createPlayer(this->player);
-		else
-			this->database.refreshPlayer(this->player);
 	}
 
 	void
@@ -103,6 +90,18 @@ namespace prx
 		}
 		if(objects_at_pacman_position.hasObjectOfType(object_type<Ghost>::name()))
 			this->state = STOPPED;
+	}
+
+	void
+	Game::initPlayer() {
+		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name", "resources/font/pac-font.ttf", sf::Color::Yellow);
+		std::string name = name_box.giveAnswer(this->window);
+
+		this->player.setName(name.c_str());
+		if(not this->database.playerExists(this->player))
+			this->database.createPlayer(this->player);
+		else
+			this->database.refreshPlayer(this->player);
 	}
 
 	void

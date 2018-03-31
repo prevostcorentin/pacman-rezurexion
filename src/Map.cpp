@@ -2,21 +2,52 @@
 
 #include <Logger.hpp>
 
+#include <Ghost.hpp>
+#include <PacGum.hpp>
+#include <Pacman.hpp>
 #include <Wall.hpp>
+
+#include <fstream>
 
 
 namespace prx
 {
 
 
-	Map::Map(sf::Vector2f dimensions) : width(dimensions.x),
-	                                    height(dimensions.y)
-	{ }
+	Map::Map(const char *map_filepath) : objects(new ObjectCollection()) {
+		std::ifstream fstream(map_filepath);
+		std::string dimensions;
+		std::getline(fstream, dimensions);
+		const std::size_t separator_position = dimensions.find_last_of(",");
+		this->width  = std::atoi(dimensions.substr(0, separator_position).c_str());
+		this->height = std::atoi(dimensions.substr(separator_position + 1).c_str());
+		std::string line;
+		std::vector<sf::Vector2f> corners;
+		for(int y=0; y < this->height; y++) {
+			std::getline(fstream, line);
+			for(int x=0; x < this->width; x++) {
+				if(line[x] == '*' or line[x] == 'G')
+					this->objects->add(new PacGum(sf::Vector2f(x, y)));
+				else if(line[x] == '-' or line[x] == '|' or line[x] == '+') 
+					this->objects->add(new Wall(sf::Vector2f(x, y)));
+				if(line[x] == 'G')
+					this->objects->add(new Ghost(sf::Vector2f(x, y)));
+			}
+		}
+	}
 
 	void
 	Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-		for(auto& object: this->objects->getAllObjects())
-			target.draw(*object, states);
+		sf::RectangleShape *wall;
+		for(auto& object: this->objects->getAllObjects()) {
+			if(object->getType() == object_type<Wall>::name()) {
+				Logger::Send(Logger::LEVEL::DEBUG, "Drawing %s@%v", object->getType().c_str(), object->getPosition());
+				wall = (sf::RectangleShape*)(Wall*)object;
+				target.draw(*wall);
+			} else {
+				target.draw(*object, states);
+			}
+		}
 	}
 
 	void
@@ -41,7 +72,7 @@ namespace prx
 	}
 
 	ObjectCollection
-	Map::getCell(sf::Vector2f position) {
+	Map::getCell(sf::Vector2f position) const {
 		ObjectCollection objects_at_position;
 		for(auto& object: this->objects->getAllObjects()) {
 			sf::Vector2f object_position = object->getPosition();
@@ -49,6 +80,11 @@ namespace prx
 				objects_at_position.add(object);
 		}
 		return objects_at_position;
+	}
+
+	ObjectCollection*
+	Map::getObjects() {
+		return this->objects;
 	}
 
 	const int
@@ -59,11 +95,6 @@ namespace prx
 	const int
 	Map::getWidth() const {
 		return this->width;
-	}
-
-	void
-	Map::setObjects(ObjectCollection *objects) {
-		this->objects = objects;
 	}
 
 

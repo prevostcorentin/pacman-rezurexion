@@ -9,6 +9,16 @@ namespace prx
 {
 
 
+	Object::Object(const char *texture_filepath)
+	{
+		sf::Color color(255, 255, 255, 255);
+		if(not this->image.loadFromFile(texture_filepath))
+			Logger::Send(Logger::LEVEL::ERROR, "Unable to load texture image (%s)", texture_filepath);
+		this->image.createMaskFromColor(color, 0);
+		if(not this->texture.loadFromImage(this->image))
+			Logger::Send(Logger::LEVEL::ERROR, "Unable to create texture (%s)", texture_filepath);
+	}
+
 	Object::Object(sf::Vector2f position, const char *sprite_sheet_filepath) {
 		sf::Color color(255, 255, 255, 255);
 		if(!this->image.loadFromFile(sprite_sheet_filepath))

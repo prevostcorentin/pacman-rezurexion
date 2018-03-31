@@ -12,9 +12,11 @@ namespace prx
 
 	class PacGum : public Object
 	{
+
 		public:
 			PacGum(sf::Vector2f position);
 			virtual const std::string getType() const;
+
 	};
 
 	template<> struct object_type<PacGum> {

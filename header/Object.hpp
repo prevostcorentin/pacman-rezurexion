@@ -20,6 +20,7 @@ namespace prx
 	{
 
 		public:
+			Object(const char *texture_filepath);
 			Object(sf::Vector2f position, const char *sprite_sheet_filepath);
 			void nextFrame();
 			virtual const std::string getType() const;

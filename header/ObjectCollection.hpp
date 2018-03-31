@@ -14,7 +14,7 @@ namespace prx
 	{
 		public:
 			ObjectCollection() { }
-			void add(Object* o);
+			void add(Object *o);
 			Object* get(int n);
 			std::vector<Object*> getAllObjects();
 			const size_t count();

@@ -26,6 +26,10 @@ namespace prx
 		                 "FOREIGN KEY (PLAYER_ID) REFERENCES PLAYER(PLAYER_ID));");
 	}
 
+	Database::~Database() {
+		sqlite3_close(this->database);
+	}
+
 	void
 	Database::execute(const char *sql_request) {
 		if(sqlite3_exec(this->database, sql_request,
@@ -34,10 +38,6 @@ namespace prx
 			Logger::Send(Logger::LEVEL::ERROR, "Can not execute query: %s", this->error_message);
 			sqlite3_free(this->error_message);
 		}
-	}
-
-	Database::~Database() {
-		sqlite3_close(this->database);
 	}
 
 	void

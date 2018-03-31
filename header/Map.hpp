@@ -18,19 +18,21 @@ namespace prx
 	{
 
 		public:
-			Map(sf::Vector2f dimensions);
+			Map(const char *map_filepath);
 			virtual void draw(sf::RenderTarget&, sf::RenderStates states) const;
 			void moveObject(Object*, const enum DIRECTION direction);
 
-			ObjectCollection getCell(sf::Vector2f);
+			ObjectCollection getCell(sf::Vector2f) const;
 			const int getHeight() const;
 			const int getWidth() const;
-			void setObjects(ObjectCollection*);
+			ObjectCollection* getObjects();
 
 		private:
+			void placeCorners(std::vector<sf::Vector2f>&);
 			ObjectCollection *objects;
 			int width;
 			int height;
+			std::vector<sf::Vector2f> corners;
 
 	};
 
