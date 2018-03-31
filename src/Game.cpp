@@ -3,7 +3,6 @@
 
 #include <Ghost.hpp>
 #include <Logger.hpp>
-#include <MapLoader.hpp>
 #include <PathFinder.hpp>
 #include <TextBox.hpp>
 #include <iostream>
@@ -26,8 +25,8 @@ namespace prx
 	                                                             GAME_TITLE,
 	                                                             sf::Style::Default,
 	                                                             context),
-	                                                         map(MAP_FILENAME),
-	                                                         start_menu(font)
+	                                                         start_menu(font),
+	                                                         map_choosing_menu(font)
 	{
 		this->state = INIT;
 
@@ -57,22 +56,30 @@ namespace prx
 			this->window.draw(this->map);
 			this->window.display();
 		} else if(this->state == STARTING) {
-			this->state = this->start_menu.giveState(this->window);
-			if(this->state == RUNNING)
+			this->state = this->start_menu.giveResult(this->window);
+			if(this->state == RUNNING) {
 				this->initPlayer();
+				const std::string filepath = this->map_choosing_menu.giveResult(this->window);
+				if(filepath.size() > 0) {
+					this->map.loadFromFile(filepath.c_str());
+					this->state = RUNNING;
+				} else {
+					this->state = STARTING;
+				}
+			}
 		}
 	}
 
 	void
 	Game::turn() {
 		static enum DIRECTION pacman_direction=RIGHT;
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			pacman_direction = DIRECTION::DOWN;
-		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 			pacman_direction = DIRECTION::LEFT;
-		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			pacman_direction = DIRECTION::RIGHT;
-		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			pacman_direction = DIRECTION::UP;
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			this->state = GAME_STATE::STOPPED;
@@ -94,7 +101,7 @@ namespace prx
 
 	void
 	Game::initPlayer() {
-		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name", "resources/font/pac-font.ttf", sf::Color::Yellow);
+		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name", "resources/font/arcade-classic.ttf", sf::Color::Yellow);
 		std::string name = name_box.giveAnswer(this->window);
 
 		this->player.setName(name.c_str());
