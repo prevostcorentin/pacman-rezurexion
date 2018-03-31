@@ -20,28 +20,30 @@ namespace prx
 	{
 
 
+		template<typename RESULT_TYPE>
 		struct MenuEntry {
-			MenuEntry(sf::String text, const enum GAME_STATE _resulting_state) : resulting_state(_resulting_state) {
+			MenuEntry<RESULT_TYPE>(sf::String text, const RESULT_TYPE result) : result(result) {
 				this->label.setString(text);
 			}
-			enum GAME_STATE resulting_state;
+			RESULT_TYPE result;
 			sf::Text label;
 		};
 
+		template<typename RESULT_TYPE>
 		class Menu : public sf::Drawable
 		{
 
 			public:
-				Menu(sf::Font&);
+				Menu<RESULT_TYPE>(sf::Font&);
 				virtual ~Menu();
 				virtual void draw(sf::RenderTarget&, sf::RenderStates states) const;
-				void addEntry(sf::String, const enum GAME_STATE);
-				const enum GAME_STATE giveState(sf::RenderWindow&);
+				void addEntry(sf::String, const RESULT_TYPE);
+				const RESULT_TYPE giveResult(sf::RenderWindow&);
 
 			private:
 				unsigned int cursor=0;
 				sf::Font& font;
-				std::vector<struct MenuEntry*> entries;
+				std::vector<struct MenuEntry<RESULT_TYPE>*> entries;
 
 		};
 
@@ -50,6 +52,9 @@ namespace prx
 
 
 }
+
+
+#include "../src/Menu.cpp.tpl"
 
 
 #endif

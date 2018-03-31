@@ -9,16 +9,19 @@ namespace prx
 {
 
 
-	GUI::Menu::Menu(sf::Font& _font) : font(_font)
+	template<typename RESULT_TYPE>
+	GUI::Menu<RESULT_TYPE>::Menu(sf::Font& _font) : font(_font)
 	{ }
 
-	GUI::Menu::~Menu() {
+	template<typename RESULT_TYPE>
+	GUI::Menu<RESULT_TYPE>::~Menu() {
 		this->entries.clear();
 	}
 
+	template<typename RESULT_TYPE>
 	void
-	GUI::Menu::addEntry(sf::String text, const enum GAME_STATE state) {
-		MenuEntry *entry = new MenuEntry(text, state);
+	GUI::Menu<RESULT_TYPE>::addEntry(sf::String text, const RESULT_TYPE state) {
+		MenuEntry<RESULT_TYPE> *entry = new MenuEntry<RESULT_TYPE>(text, state);
 		entry->label.setCharacterSize(32);
 		entry->label.setFillColor(sf::Color::Yellow);
 		entry->label.setFont(this->font);
@@ -27,8 +30,9 @@ namespace prx
 		this->entries.push_back(entry);
 	}
 
+	template<typename RESULT_TYPE>
 	void
-	GUI::Menu::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	GUI::Menu<RESULT_TYPE>::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 		for(auto& entry: this->entries)
 			entry->label.setStyle(sf::Text::Bold);
 		this->entries[this->cursor]->label.setStyle(sf::Text::Underlined);
@@ -36,27 +40,28 @@ namespace prx
 			target.draw(entry->label, states);
 	}
 
-	const enum GAME_STATE
-	GUI::Menu::giveState(sf::RenderWindow& window) {
+	template<typename RESULT_TYPE>
+	const RESULT_TYPE
+	GUI::Menu<RESULT_TYPE>::giveResult(sf::RenderWindow& window) {
 		bool done=false;
 		sf::Event event;
-		enum GAME_STATE new_state;
+		RESULT_TYPE result;
 		while(not done) {
 			window.clear();
 			window.draw(*this);
 			while(window.pollEvent(event)) {
 				if(event.type == sf::Event::KeyPressed) {
-					if(event.key.code == sf::Keyboard::Z and this->cursor > 0)
+					if(event.key.code == sf::Keyboard::Up and this->cursor > 0)
 						this->cursor = cursor - 1;
-					else if(event.key.code == sf::Keyboard::S)
+					else if(event.key.code == sf::Keyboard::Down)
 						this->cursor = (1 + this->cursor) % this->entries.size();
 					else if(event.key.code == sf::Keyboard::Return)
-						done = true, new_state = this->entries[this->cursor]->resulting_state;
+						done = true, result = this->entries[this->cursor]->result;
 				}
 			}
 			window.display();
 		}
-		return new_state;
+		return result;
 	}
 
 

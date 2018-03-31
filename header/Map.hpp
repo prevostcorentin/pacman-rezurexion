@@ -18,8 +18,9 @@ namespace prx
 	{
 
 		public:
-			Map(const char *map_filepath);
+			Map();
 			virtual void draw(sf::RenderTarget&, sf::RenderStates states) const;
+			void loadFromFile(const char *filepath);
 			void moveObject(Object*, const enum DIRECTION direction);
 
 			ObjectCollection getCell(sf::Vector2f) const;

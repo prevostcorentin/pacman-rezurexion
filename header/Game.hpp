@@ -8,6 +8,7 @@
 #include <Database.hpp>
 #include <GameState.hpp>
 #include <Map.hpp>
+#include <MapChoosingMenu.hpp>
 #include <Menu.hpp>
 #include <ObjectCollection.hpp>
 #include <PacGum.hpp>
@@ -45,7 +46,8 @@ namespace prx
 			Map map;
 			Database database;
 			Player player;
-			GUI::Menu start_menu;
+			GUI::Menu<enum GAME_STATE> start_menu;
+			GUI::MapChoosingMenu map_choosing_menu;
 
 	};
 

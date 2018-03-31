@@ -14,8 +14,25 @@ namespace prx
 {
 
 
-	Map::Map(const char *map_filepath) : objects(new ObjectCollection()) {
-		std::ifstream fstream(map_filepath);
+	Map::Map() : objects(new ObjectCollection())
+	{ }
+
+	void
+	Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+		sf::RectangleShape *wall;
+		for(auto& object: this->objects->getAllObjects()) {
+			if(object->getType() == object_type<Wall>::name()) {
+				wall = (sf::RectangleShape*)(Wall*)object;
+				target.draw(*wall);
+			} else {
+				target.draw(*object, states);
+			}
+		}
+	}
+
+	void
+	Map::loadFromFile(const char *filepath) {
+		std::ifstream fstream(filepath);
 		std::string dimensions;
 		std::getline(fstream, dimensions);
 		const std::size_t separator_position = dimensions.find_last_of(",");
@@ -32,20 +49,6 @@ namespace prx
 					this->objects->add(new Wall(sf::Vector2f(x, y)));
 				if(line[x] == 'G')
 					this->objects->add(new Ghost(sf::Vector2f(x, y)));
-			}
-		}
-	}
-
-	void
-	Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-		sf::RectangleShape *wall;
-		for(auto& object: this->objects->getAllObjects()) {
-			if(object->getType() == object_type<Wall>::name()) {
-				Logger::Send(Logger::LEVEL::DEBUG, "Drawing %s@%v", object->getType().c_str(), object->getPosition());
-				wall = (sf::RectangleShape*)(Wall*)object;
-				target.draw(*wall);
-			} else {
-				target.draw(*object, states);
 			}
 		}
 	}
