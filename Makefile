@@ -11,7 +11,7 @@ else
 endif
 
 CC = gcc
-CXX_FLAGS = -DSFML_STATIC -Wall -Wno-unused-local-typedefs -std=c++0x
+CXX_FLAGS = -DSFML_STATIC -Wall -std=c++0x
 EXECUTABLE = PacmanRezurexion
 HEADERS_PATHS = -Iextlibs -Iextlibs/SFML/include -Iheader
 STATIC_LIBS_SEARCH_PATHS = -Lextlibs/SFML/lib -Lextlibs/sqlite3/lib -Llib
@@ -25,10 +25,10 @@ all: SFML extlibs/sqlite3/lib/libsqlite3.a debug-target release-target
 	cp $(DYNAMIC_LIBS) bin/Debug
 	cp $(DYNAMIC_LIBS) bin/Release
 
-debug-target: lib/libprx.a bin/Debug/$(EXECUTABLE) lib/libsqlite3.a
+debug-target: lib/libprx.a bin/Debug/$(EXECUTABLE)
 	cp -R resources bin/Debug/resources
 
-release-target: lib/libprx.a bin/Release/$(EXECUTABLE) lib/libsqlite3.a
+release-target: lib/libprx.a bin/Release/$(EXECUTABLE)
 	cp -R resources bin/Release/resources
 
 lib/libprx.a: obj $(OBJS) lib
