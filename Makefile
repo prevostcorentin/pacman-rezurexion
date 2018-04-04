@@ -44,24 +44,21 @@ obj/%.o: src/%.cpp
 lib:
 	mkdir $@
 
-bin/Debug/$(EXECUTABLE): bin/Debug
+bin/Debug/$(EXECUTABLE): | bin/Debug
 	$(CXX) $(CXX_FLAGS) -g src/main.cpp -o $@ \
 		$(HEADERS_PATHS) \
 		$(STATIC_LIBS_SEARCH_PATHS) $(LIBS)
 
-bin/Debug: bin
-	mkdir $@
+bin/Debug:
+	mkdir -p $@
 
-bin/Release/$(EXECUTABLE): bin/Release
+bin/Release/$(EXECUTABLE): | bin/Release
 	$(CXX) $(CXX_FLAGS) src/main.cpp -o $@ \
 		$(HEADERS_PATHS) \
 		$(RELEASE_LDFLAGS) $(STATIC_LIBS_SEARCH_PATHS) $(LIBS)
 
-bin/Release: bin
-	mkdir $@
-
-bin:
-	mkdir $@
+bin/Release:
+	mkdir -p $@
 
 dependencies: SFML lib/libsqlite3.a
 
