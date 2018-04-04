@@ -25,8 +25,9 @@ namespace prx
 	                                                             GAME_TITLE,
 	                                                             sf::Style::Default,
 	                                                             context),
-	                                                         start_menu(font),
-	                                                         map_choosing_menu(font)
+	                                                         map_choosing_menu(font),
+	                                                         score_menu(font),
+	                                                         start_menu(font)
 	{
 		this->state = INIT;
 
@@ -34,7 +35,7 @@ namespace prx
 		this->objects->add(this->player.pacman);
 
 		this->start_menu.addEntry(sf::String("Play"), RUNNING);
-		this->start_menu.addEntry(sf::String("Scores"), ERROR);
+		this->start_menu.addEntry(sf::String("Scores"), SHOW_SCORES);
 		this->start_menu.addEntry(sf::String("Quit"), STOPPED);
 	}
 
@@ -46,6 +47,7 @@ namespace prx
 			this->updateGame();
 			sf::sleep(sf::milliseconds(120));
 		}
+		this->quit();
 	}
 
 	void
@@ -67,6 +69,8 @@ namespace prx
 					this->state = STARTING;
 				}
 			}
+		} else if(this->state == SHOW_SCORES) {
+			this->state = this->score_menu.giveResult(this->window);
 		}
 	}
 
@@ -115,11 +119,12 @@ namespace prx
 	Game::quit() {
 		if(this->window.isOpen())
 			window.close();
-		this->database.insertScore(this->player);
+		if(this->player.getId() != -1) {
+			Logger::Send(Logger::LEVEL::INFO, "%s has now %d pac-gums eaten", this->player.getName(),
+		                                     this->database.getTotalScore(this->player));
+			this->database.insertScore(this->player);
+		}
 		delete this->objects;
-		Logger::Send(Logger::LEVEL::INFO, "%s has now %d pac-gums eaten",
-		                                  this->player.getName(),
-		                                  this->database.getTotalScore(this->player));
 		Logger::Send(Logger::LEVEL::INFO, "Quitting game ...");
 		this->state = STOPPED;
 	}

@@ -8,7 +8,6 @@
 namespace prx
 {
 
-
 	template<typename RESULT_TYPE>
 	GUI::Menu<RESULT_TYPE>::Menu(sf::Font& _font) : font(_font)
 	{ }
@@ -57,6 +56,8 @@ namespace prx
 						this->cursor = (1 + this->cursor) % this->entries.size();
 					else if(event.key.code == sf::Keyboard::Return)
 						done = true, result = this->entries[this->cursor]->result;
+					if(this->cursor < 0)
+						this->cursor = this->entries.size() - 1;
 				}
 			}
 			window.display();

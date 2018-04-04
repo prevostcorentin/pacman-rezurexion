@@ -1,11 +1,8 @@
-#include <cstring>
-#include <iostream>
-#include <string>
-#include <vector>
-
 #include <Database.hpp>
 
 #include <Logger.hpp>
+
+#include <cstring>
 
 
 namespace prx
@@ -14,7 +11,7 @@ namespace prx
 
 	Database::Database() {
 		sqlite3_initialize();
-		if(sqlite3_open("score.db", &this->database))
+		if(sqlite3_open("resources/score.db", &this->database))
 			Logger::Send(Logger::LEVEL::ERROR, "Cannot open score database %s: ", sqlite3_errmsg(this->database));
 		this->execute("CREATE TABLE IF NOT EXISTS PLAYER(" \
 		                 "PLAYER_ID INTEGER PRIMARY KEY AUTOINCREMENT," \
@@ -85,6 +82,7 @@ namespace prx
 		                                   "SCORE(PLAYER_ID, AMOUNT) " \
 		                                   "VALUES(?, ?);",
 		                   -1, &statement, NULL) == SQLITE_OK) {
+			Logger::Send(Logger::LEVEL::DEBUG, "%s inserts %d points of score", player.getName(), player.getScore());
 			sqlite3_bind_int(statement, 1, player.getId());
 			sqlite3_bind_int(statement, 2, player.getScore());
 			sqlite3_step(statement);
@@ -107,6 +105,30 @@ namespace prx
 			}
 			sqlite3_finalize(statement);
 		}
+	}
+
+	std::map<std::string, const int>
+	Database::getAllScores() {
+		sqlite3_stmt *statement;
+		std::map<std::string, const int> scores;
+		if(sqlite3_prepare(this->database, "SELECT PLAYER_ID, AMOUNT FROM SCORE",
+		                   -1, &statement, NULL) == SQLITE_OK)
+		{
+			while(sqlite3_step(statement) == SQLITE_ROW) {
+				const int player_id = sqlite3_column_int(statement, 0);
+				const int score_amount = sqlite3_column_int(statement, 1);
+				Logger::Send(Logger::LEVEL::DEBUG, "Having a score of %d for player@%d", score_amount, player_id);
+				sqlite3_prepare(this->database, "SELECT NAME FROM PLAYER WHERE PLAYER_ID = ?",
+				                -1, &statement, NULL);
+				sqlite3_bind_int(statement, 1, player_id);
+				if(sqlite3_step(statement) == SQLITE_ROW) {
+					std::string player_name((const char*) sqlite3_column_text(statement, 0));
+					scores.insert(std::pair<std::string, const int>(player_name, score_amount));
+				}
+			}
+			sqlite3_finalize(statement);
+		}
+		return scores;
 	}
 
 	int

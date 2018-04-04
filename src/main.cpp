@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 		game.launch();
 	} catch (std::exception e) {
 		std::cout << "Unexpected exception" << std::endl;
-	}
+	} 
 	return EXIT_SUCCESS;
 }
 

@@ -13,6 +13,7 @@
 #include <ObjectCollection.hpp>
 #include <PacGum.hpp>
 #include <Player.hpp>
+#include <ScoreMenu.hpp>
 #include <Wall.hpp>
 
 
@@ -46,8 +47,9 @@ namespace prx
 			Map map;
 			Database database;
 			Player player;
-			GUI::Menu<enum GAME_STATE> start_menu;
 			GUI::MapChoosingMenu map_choosing_menu;
+			GUI::ScoreMenu score_menu;
+			GUI::Menu<enum GAME_STATE> start_menu;
 
 	};
 
