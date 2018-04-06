@@ -119,11 +119,8 @@ namespace prx
 	Game::quit() {
 		if(this->window.isOpen())
 			window.close();
-		if(this->player.getId() != -1) {
-			Logger::Send(Logger::LEVEL::INFO, "%s has now %d pac-gums eaten", this->player.getName(),
-		                                     this->database.getTotalScore(this->player));
+		if(this->player.getId() != -1)
 			this->database.insertScore(this->player);
-		}
 		delete this->objects;
 		Logger::Send(Logger::LEVEL::INFO, "Quitting game ...");
 		this->state = STOPPED;

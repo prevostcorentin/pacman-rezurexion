@@ -24,6 +24,7 @@ namespace prx
 	}
 
 	Database::~Database() {
+		sqlite3_shutdown();
 		sqlite3_close(this->database);
 	}
 
@@ -47,6 +48,7 @@ namespace prx
 			sqlite3_bind_text(statement, 1, player.getName(), strlen(player.getName()), NULL);
 			sqlite3_step(statement);
 			sqlite3_finalize(statement);
+			// Get last id
 			if(sqlite3_prepare(this->database, "SELECT PLAYER_ID FROM PLAYER " \
 			                                   "ORDER BY PLAYER_ID DESC " \
 			                                   "LIMIT 1",
@@ -68,9 +70,9 @@ namespace prx
 			sqlite3_bind_int(statement, 1, player.getId());
 			sqlite3_bind_text(statement, 2, player.getName(), strlen(player.getName()), NULL);
 			if(sqlite3_step(statement) == SQLITE_ROW) {
-				sqlite3_finalize(statement);
 				return true;
 			}
+			sqlite3_finalize(statement);
 		}
 		return false;
 	}
@@ -85,7 +87,8 @@ namespace prx
 			Logger::Send(Logger::LEVEL::DEBUG, "%s inserts %d points of score", player.getName(), player.getScore());
 			sqlite3_bind_int(statement, 1, player.getId());
 			sqlite3_bind_int(statement, 2, player.getScore());
-			sqlite3_step(statement);
+			if(sqlite3_step(statement) != SQLITE_ROW)
+				Logger::Send(Logger::LEVEL::DEBUG, "There has been an error while insertion: %s", sqlite3_errmsg(this->database));
 			sqlite3_finalize(statement);
 		}
 	}
@@ -118,13 +121,14 @@ namespace prx
 				const int player_id = sqlite3_column_int(statement, 0);
 				const int score_amount = sqlite3_column_int(statement, 1);
 				Logger::Send(Logger::LEVEL::DEBUG, "Having a score of %d for player@%d", score_amount, player_id);
-				sqlite3_prepare(this->database, "SELECT NAME FROM PLAYER WHERE PLAYER_ID = ?",
-				                -1, &statement, NULL);
+				sqlite3_prepare(this->database, "SELECT NAME FROM PLAYER WHERE PLAYER_ID = ?", -1, &statement, NULL);
 				sqlite3_bind_int(statement, 1, player_id);
 				if(sqlite3_step(statement) == SQLITE_ROW) {
 					std::string player_name((const char*) sqlite3_column_text(statement, 0));
 					scores.insert(std::pair<std::string, const int>(player_name, score_amount));
+					Logger::Send(Logger::LEVEL::DEBUG, "%s:%d", std::pair<std::string, const int>(player_name, score_amount));
 				}
+				Logger::Send(Logger::LEVEL::DEBUG, "There is a score");
 			}
 			sqlite3_finalize(statement);
 		}
