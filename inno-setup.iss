@@ -36,7 +36,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "Z:\Projets\Pacman Rezurexion\bin\Release\PacmanRezurexion.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Z:\Projets\Pacman Rezurexion\bin\Release\resources\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "Z:\Projets\Pacman Rezurexion\bin\Release\resources\*"; DestDir: "{app}/resources"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "Z:\Projets\Pacman Rezurexion\bin\Release\sfml-audio-2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Z:\Projets\Pacman Rezurexion\bin\Release\sfml-graphics-2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Z:\Projets\Pacman Rezurexion\bin\Release\sfml-network-2.dll"; DestDir: "{app}"; Flags: ignoreversion
