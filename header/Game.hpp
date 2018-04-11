@@ -5,6 +5,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Font.hpp>
 
+#include <CPUSpinner.hpp>
 #include <Database.hpp>
 #include <GameState.hpp>
 #include <Map.hpp>
@@ -40,6 +41,7 @@ namespace prx
 			void updateGame();
 			void updateState(const enum GAME_STATE);
 
+			CPUSpinner spinner;
 			enum GAME_STATE state;
 			sf::RenderWindow window;
 			ObjectCollection* objects;

@@ -22,13 +22,14 @@ namespace prx
 {
 
 
-	Game::Game(sf::ContextSettings context, sf::Font& font) : window(sf::VideoMode(640, 480),
-	                                                             GAME_TITLE,
-	                                                             sf::Style::Default,
-	                                                             context),
-	                                                         map_choosing_menu(font),
-	                                                         score_menu(font),
-	                                                         start_menu(font)
+	Game::Game(sf::ContextSettings context, sf::Font& font) : spinner(SPIN_DELAY),
+	                                                          window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT),
+	                                                                 GAME_TITLE,
+	                                                                 sf::Style::Default,
+	                                                                 context),
+	                                                          map_choosing_menu(font),
+	                                                          score_menu(font),
+	                                                          start_menu(font)
 	{
 		this->state = INIT;
 
@@ -52,10 +53,8 @@ namespace prx
 	Game::launch() {
 		this->window.setActive();
 		this->state = STARTING;
-		while(this->state != STOPPED and this->window.isOpen()) {
+		while(this->state != STOPPED and this->window.isOpen())
 			this->updateGame();
-			sf::sleep(sf::milliseconds(120));
-		}
 		this->quit();
 	}
 
@@ -96,20 +95,20 @@ namespace prx
 			pacman_direction = DIRECTION::UP;
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			this->state = GAME_STATE::STOPPED;
-
-		this->map.moveObject(this->player.pacman, pacman_direction);
-		for(auto& ghost: this->objects->getObjectsOfType(object_type<Ghost>::name()))
-			this->map.moveObject(ghost, PathFinder::GetNearestShortestDirection(ghost, this->player.pacman, this->map));
-
-		ObjectCollection objects_at_pacman_position = this->map.getCell(this->player.pacman->getPosition());
-		if(objects_at_pacman_position.hasObjectOfType(object_type<PacGum>::name())) {
-			for(auto& pac_gum: objects_at_pacman_position.getObjectsOfType(object_type<PacGum>::name())) {
-				this->player.setScore(this->player.getScore() + 1);
-				this->objects->erase(pac_gum);
+		if(this->spinner.nextTickMustIterate()) {
+			this->map.moveObject(this->player.pacman, pacman_direction);
+			for(auto& ghost: this->objects->getObjectsOfType(object_type<Ghost>::name()))
+				this->map.moveObject(ghost, PathFinder::GetNearestShortestDirection(ghost, this->player.pacman, this->map));
+			ObjectCollection objects_at_pacman_position = this->map.getCell(this->player.pacman->getPosition());
+			if(objects_at_pacman_position.hasObjectOfType(object_type<PacGum>::name())) {
+				for(auto& pac_gum: objects_at_pacman_position.getObjectsOfType(object_type<PacGum>::name())) {
+					this->player.setScore(this->player.getScore() + 1);
+					this->objects->erase(pac_gum);
+				}
 			}
+			if(objects_at_pacman_position.hasObjectOfType(object_type<Ghost>::name()))
+				this->state = STOPPED;
 		}
-		if(objects_at_pacman_position.hasObjectOfType(object_type<Ghost>::name()))
-			this->state = STOPPED;
 	}
 
 	void
@@ -131,8 +130,8 @@ namespace prx
 		if(this->player.getId() != -1)
 			this->database.insertScore(this->player);
 		delete this->objects;
+		this->state = STOPPED;
 		this->database.close();
-		Logger::Send(Logger::LEVEL::INFO, "Quitting game ...");
 	}
 
 
