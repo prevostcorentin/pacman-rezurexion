@@ -17,7 +17,7 @@ namespace prx
 	{
 		public:
 			Database();
-			~Database();
+			void close();
 			void createPlayer(Player&);
 			bool playerExists(Player&);
 			void insertScore(Player&);

@@ -23,7 +23,8 @@ namespace prx
 		                 "FOREIGN KEY (PLAYER_ID) REFERENCES PLAYER(PLAYER_ID));");
 	}
 
-	Database::~Database() {
+	void
+	Database::close() {
 		sqlite3_shutdown();
 		sqlite3_close(this->database);
 	}
@@ -84,11 +85,10 @@ namespace prx
 		                                   "SCORE(PLAYER_ID, AMOUNT) " \
 		                                   "VALUES(?, ?);",
 		                   -1, &statement, NULL) == SQLITE_OK) {
-			Logger::Send(Logger::LEVEL::DEBUG, "%s inserts %d points of score", player.getName(), player.getScore());
 			sqlite3_bind_int(statement, 1, player.getId());
 			sqlite3_bind_int(statement, 2, player.getScore());
-			if(sqlite3_step(statement) != SQLITE_ROW)
-				Logger::Send(Logger::LEVEL::DEBUG, "There has been an error while insertion: %s", sqlite3_errmsg(this->database));
+			if(sqlite3_step(statement) != SQLITE_DONE)
+				Logger::Send(Logger::LEVEL::ERROR, "Can not insert score: %s", sqlite3_errmsg(this->database));
 			sqlite3_finalize(statement);
 		}
 	}
@@ -97,14 +97,14 @@ namespace prx
 	Database::refreshPlayer(Player& player) {
 		sqlite3_stmt *statement;
 		if(sqlite3_prepare(this->database, "SELECT PLAYER_ID, NAME FROM PLAYER " \
-		                                   "WHERE NAME = ?;",
+		                                   "WHERE PLAYER_ID = ? OR NAME = ?;",
 		                   -1, &statement, NULL) == SQLITE_OK)
 		{
-			sqlite3_bind_text(statement, 1, player.getName(), strlen(player.getName()), NULL);
+			sqlite3_bind_int(statement, 1, player.getId());
+			sqlite3_bind_text(statement, 2, player.getName(), strlen(player.getName()), NULL);
 			if(sqlite3_step(statement) == SQLITE_ROW) {
 				player.setId(sqlite3_column_int(statement, 0));
 				player.setName((const char*) sqlite3_column_text(statement, 1));
-				Logger::Send(Logger::LEVEL::DEBUG, "Player from database:\nName: %s\tId: %d", player.getName(), player.getId());
 			}
 			sqlite3_finalize(statement);
 		}
@@ -114,21 +114,15 @@ namespace prx
 	Database::getAllScores() {
 		sqlite3_stmt *statement;
 		std::map<std::string, const int> scores;
-		if(sqlite3_prepare(this->database, "SELECT PLAYER_ID, AMOUNT FROM SCORE",
+		if(sqlite3_prepare(this->database, "SELECT PLAYER_ID FROM SCORE",
 		                   -1, &statement, NULL) == SQLITE_OK)
 		{
 			while(sqlite3_step(statement) == SQLITE_ROW) {
 				const int player_id = sqlite3_column_int(statement, 0);
-				const int score_amount = sqlite3_column_int(statement, 1);
-				Logger::Send(Logger::LEVEL::DEBUG, "Having a score of %d for player@%d", score_amount, player_id);
-				sqlite3_prepare(this->database, "SELECT NAME FROM PLAYER WHERE PLAYER_ID = ?", -1, &statement, NULL);
-				sqlite3_bind_int(statement, 1, player_id);
-				if(sqlite3_step(statement) == SQLITE_ROW) {
-					std::string player_name((const char*) sqlite3_column_text(statement, 0));
-					scores.insert(std::pair<std::string, const int>(player_name, score_amount));
-					Logger::Send(Logger::LEVEL::DEBUG, "%s:%d", std::pair<std::string, const int>(player_name, score_amount));
-				}
-				Logger::Send(Logger::LEVEL::DEBUG, "There is a score");
+				Player player;
+				player.setId(player_id);
+				this->refreshPlayer(player);
+				scores.insert(std::pair<std::string, const int>(player.getName(), this->getTotalScore(player)));
 			}
 			sqlite3_finalize(statement);
 		}
