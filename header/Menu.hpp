@@ -19,7 +19,6 @@ namespace prx
 	namespace GUI
 	{
 
-
 		template<typename RESULT_TYPE>
 		struct MenuEntry {
 			MenuEntry<RESULT_TYPE>(sf::String text, const RESULT_TYPE result) : result(result) {

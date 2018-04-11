@@ -48,8 +48,9 @@ namespace prx
 			Map map;
 			Database database;
 			Player player;
-			GUI::Menu<enum GAME_STATE> start_menu;
 			GUI::MapChoosingMenu map_choosing_menu;
+			GUI::Menu<enum GAME_STATE> score_menu;
+			GUI::Menu<enum GAME_STATE> start_menu;
 
 	};
 

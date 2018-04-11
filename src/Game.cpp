@@ -12,6 +12,7 @@
 #include <SFML/Window/Keyboard.hpp>
 
 #include <iostream>
+#include <sstream>
 
 
 #define MAP_FILENAME "resources/map/corner_test.map"
@@ -26,8 +27,9 @@ namespace prx
 	                                                                 GAME_TITLE,
 	                                                                 sf::Style::Default,
 	                                                                 context),
-	                                                          start_menu(font),
-	                                                          map_choosing_menu(font)
+	                                                          map_choosing_menu(font),
+	                                                          score_menu(font),
+	                                                          start_menu(font)
 	{
 		this->state = INIT;
 
@@ -35,8 +37,16 @@ namespace prx
 		this->objects->add(this->player.pacman);
 
 		this->start_menu.addEntry(sf::String("Play"), RUNNING);
-		this->start_menu.addEntry(sf::String("Scores"), ERROR);
+		this->start_menu.addEntry(sf::String("Scores"), SHOW_SCORES);
 		this->start_menu.addEntry(sf::String("Quit"), STOPPED);
+
+		std::ostringstream string_stream;
+		for(auto& player_score: this->database.getAllScores()) {
+			string_stream.str(std::string());
+			string_stream << player_score.first << "\t" << player_score.second;
+			this->score_menu.addEntry(string_stream.str(), GAME_STATE::SHOW_SCORES);
+		}
+		this->score_menu.addEntry("Return", GAME_STATE::STARTING);
 	}
 
 	void
@@ -45,6 +55,7 @@ namespace prx
 		this->state = STARTING;
 		while(this->state != STOPPED and this->window.isOpen())
 			this->updateGame();
+		this->quit();
 	}
 
 	void
@@ -66,6 +77,8 @@ namespace prx
 					this->state = STARTING;
 				}
 			}
+		} else if(this->state == SHOW_SCORES) {
+			this->state = this->score_menu.giveResult(this->window);
 		}
 	}
 
@@ -114,9 +127,11 @@ namespace prx
 	Game::quit() {
 		if(this->window.isOpen())
 			window.close();
-		this->database.insertScore(this->player);
+		if(this->player.getId() != -1)
+			this->database.insertScore(this->player);
 		delete this->objects;
 		this->state = STOPPED;
+		this->database.close();
 	}
 
 

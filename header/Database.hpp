@@ -5,6 +5,9 @@
 
 #include <Player.hpp>
 
+#include <map>
+#include <string>
+
 
 namespace prx
 {
@@ -14,11 +17,12 @@ namespace prx
 	{
 		public:
 			Database();
-			~Database();
+			void close();
 			void createPlayer(Player&);
 			bool playerExists(Player&);
 			void insertScore(Player&);
 			void refreshPlayer(Player&);
+			std::map<std::string, const int> getAllScores();
 			int getTotalScore(Player&);
 
 		private:
