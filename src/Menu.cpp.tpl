@@ -8,6 +8,7 @@
 namespace prx
 {
 
+
 	template<typename RESULT_TYPE>
 	GUI::Menu<RESULT_TYPE>::Menu(sf::Font& _font) : font(_font)
 	{ }
