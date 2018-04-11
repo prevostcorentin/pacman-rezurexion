@@ -10,8 +10,10 @@ else
 	DYNAMIC_LIBS = extlibs/SFML/lib/libsfml-*.so
 endif
 
+
 CC = gcc
-CXX_FLAGS = -DSFML_STATIC -Wall -std=c++0x
+CXX_FLAGS = -Wall -std=c++0x
+DEFINES = -DSFML_STATIC -DSPIN_DELAY=120 -DSCREEN_WIDTH=640 -DSCREEN_HEIGHT=480
 EXECUTABLE = PacmanRezurexion
 HEADERS_PATHS = -Iextlibs -Iextlibs/SFML/include -Iheader
 STATIC_LIBS_SEARCH_PATHS = -Lextlibs/SFML/lib -Lextlibs/sqlite3/lib -Llib
@@ -38,7 +40,7 @@ obj:
 	mkdir $@
 
 obj/%.o: src/%.cpp
-	$(CXX) $(CXX_FLAGS) -c $< -o $@ \
+	$(CXX) $(CXX_FLAGS) $(DEFINES) -c $< -o $@ \
 		-Iextlibs/ -Iextlibs/SFML/include -Iheader
 
 lib:
