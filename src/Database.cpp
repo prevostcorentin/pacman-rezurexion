@@ -49,16 +49,7 @@ namespace prx
 			sqlite3_bind_text(statement, 1, player.getName(), strlen(player.getName()), NULL);
 			sqlite3_step(statement);
 			sqlite3_finalize(statement);
-			// Get last id
-			if(sqlite3_prepare(this->database, "SELECT PLAYER_ID FROM PLAYER " \
-			                                   "ORDER BY PLAYER_ID DESC " \
-			                                   "LIMIT 1",
-			                   -1, &statement, NULL) == SQLITE_OK)
-			{
-				sqlite3_step(statement);
-				player.setId(sqlite3_column_int(statement, 0));
-				sqlite3_finalize(statement);
-			}
+			player.setId(sqlite3_last_insert_rowid(this->database));
 		}
 	}
 
