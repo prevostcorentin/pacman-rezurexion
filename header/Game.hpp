@@ -41,6 +41,7 @@ namespace prx
 			void updateGame();
 			void updateState(const enum GAME_STATE);
 
+			sf::Font& font;
 			CPUSpinner spinner;
 			enum GAME_STATE state;
 			sf::RenderWindow window;
