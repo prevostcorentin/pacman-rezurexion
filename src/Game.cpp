@@ -2,6 +2,7 @@
 #include <Wall.hpp>
 
 #include <Ghost.hpp>
+#include <Label.hpp>
 #include <Logger.hpp>
 #include <PathFinder.hpp>
 #include <TextBox.hpp>
@@ -22,14 +23,15 @@ namespace prx
 {
 
 
-	Game::Game(sf::ContextSettings context, sf::Font& font) : spinner(SPIN_DELAY),
-	                                                          window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT),
-	                                                                 GAME_TITLE,
-	                                                                 sf::Style::Default,
-	                                                                 context),
-	                                                          map_choosing_menu(font),
-	                                                          score_menu(font),
-	                                                          start_menu(font)
+	Game::Game(sf::ContextSettings context, sf::Font& _font) : font(_font),
+	                                                           spinner(SPIN_DELAY),
+	                                                           window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT),
+	                                                                  GAME_TITLE,
+	                                                                  sf::Style::Default,
+	                                                                  context),
+	                                                           map_choosing_menu(font),
+	                                                           score_menu(font),
+	                                                           start_menu(font)
 	{
 		this->state = INIT;
 
@@ -79,6 +81,17 @@ namespace prx
 			}
 		} else if(this->state == SHOW_SCORES) {
 			this->state = this->score_menu.giveResult(this->window);
+		} else if(this->state == GAME_ENDED) {
+			std::ostringstream text;
+			text << this->player.getName() << " has died with " << this->player.getScore() << std::endl <<
+			        "Press Return to quit";
+			GUI::Label label(sf::Vector2f(0, 0), text.str(), this->font);
+			this->window.clear();
+			this->window.draw(label);
+			this->window.display();
+			while(not sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+			; // block execution
+			this->state = STOPPED;
 		}
 	}
 
@@ -107,7 +120,7 @@ namespace prx
 				}
 			}
 			if(objects_at_pacman_position.hasObjectOfType(object_type<Ghost>::name()))
-				this->state = STOPPED;
+				this->state = GAME_ENDED;
 		}
 	}
 

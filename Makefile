@@ -14,7 +14,7 @@ endif
 CC = gcc
 CXX_FLAGS = -Wall -std=c++0x
 DEFINES = -DSFML_STATIC -DSPIN_DELAY=120 -DSCREEN_WIDTH=640 -DSCREEN_HEIGHT=480
-EXECUTABLE = PacmanRezurexion
+EXECUTABLE = pacman-rezurexion
 HEADERS_PATHS = -Iextlibs -Iextlibs/SFML/include -Iheader
 STATIC_LIBS_SEARCH_PATHS = -Lextlibs/SFML/lib -Lextlibs/sqlite3/lib -Llib
 LIBS += -lprx -lsfml-system -lsfml-graphics -lsfml-window -lsqlite3
