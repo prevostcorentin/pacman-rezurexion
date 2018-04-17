@@ -42,6 +42,11 @@ namespace prx
 		}
 	}
 
+	const enum DIRECTION
+	Object::getDirection() {
+		return this->direction;
+	}
+
 	const std::string 
 	Object::getType() const {
 		return object_type<Object>::name();
