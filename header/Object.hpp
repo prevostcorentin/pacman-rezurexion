@@ -23,6 +23,7 @@ namespace prx
 			Object(const char *texture_filepath);
 			Object(sf::Vector2f position, const char *sprite_sheet_filepath);
 			void nextFrame();
+			const enum DIRECTION getDirection();
 			virtual const std::string getType() const;
 			void setDirection(const enum DIRECTION);
 
