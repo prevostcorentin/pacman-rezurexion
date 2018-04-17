@@ -58,7 +58,7 @@ namespace prx
 
 	void
 	Map::moveObject(Object *object, const enum DIRECTION direction) {
-		sf::Vector2f new_position = sf::Vector2f(object->getPosition().x, object->getPosition().y);
+		sf::Vector2f new_position = object->getPosition();
 		if(direction == DOWN)
 			new_position.y = 32 + new_position.y;
 		else if(direction == LEFT)
@@ -110,4 +110,3 @@ namespace prx
 
 
 }
-
