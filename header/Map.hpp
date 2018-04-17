@@ -25,15 +25,15 @@ namespace prx
 
 			ObjectCollection getCell(sf::Vector2f) const;
 			const int getHeight() const;
-			const int getWidth() const;
 			ObjectCollection* getObjects();
+			const int getNeededScore();
+			const int getWidth() const;
 
 		private:
-			void placeCorners(std::vector<sf::Vector2f>&);
 			ObjectCollection *objects;
 			int width;
 			int height;
-			std::vector<sf::Vector2f> corners;
+			int score;
 
 	};
 

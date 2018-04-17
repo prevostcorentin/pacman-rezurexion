@@ -32,6 +32,8 @@ namespace prx
 			void launch();
 
 		private:
+			void handleEnd();
+			void handleMainMenu();
 			void initPlayer();
 			void moveObject(Object*);
 			void moveGhosts();

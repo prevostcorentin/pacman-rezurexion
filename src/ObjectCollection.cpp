@@ -59,5 +59,10 @@ namespace prx
 			Logger::Send(Logger::LEVEL::ERROR, "Can not erase: %s@%p does not exist", o->getType().c_str(), o);
 	}
 
+	void
+	ObjectCollection::clear() {
+		this->objects.clear();
+	}
+
 
 }
