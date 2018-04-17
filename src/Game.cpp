@@ -16,9 +16,6 @@
 #include <sstream>
 
 
-#define MAP_FILENAME "resources/map/corner_test.map"
-
-
 namespace prx
 {
 
@@ -36,7 +33,6 @@ namespace prx
 		this->state = INIT;
 
 		this->objects = this->map.getObjects();
-		this->objects->add(this->player.pacman);
 
 		this->start_menu.addEntry(sf::String("Play"), RUNNING);
 		this->start_menu.addEntry(sf::String("Scores"), SHOW_SCORES);
@@ -64,34 +60,19 @@ namespace prx
 	Game::updateGame() {
 		if(this->state == RUNNING) {
 			this->turn();
+			if(not this->objects->hasObjectOfType(object_type<PacGum>::name()))
+				this->state = GAME_ENDED;
 			this->window.clear();
 			this->window.draw(this->map);
 			this->window.display();
 		} else if(this->state == STARTING) {
-			this->state = this->start_menu.giveResult(this->window);
-			if(this->state == RUNNING) {
-				this->initPlayer();
-				const std::string filepath = this->map_choosing_menu.giveResult(this->window);
-				if(filepath.size() > 0) {
-					this->map.loadFromFile(filepath.c_str());
-					this->state = RUNNING;
-				} else {
-					this->state = STARTING;
-				}
-			}
+			this->objects->clear();
+			this->objects->add(this->player.pacman);
+			this->handleMainMenu();
 		} else if(this->state == SHOW_SCORES) {
 			this->state = this->score_menu.giveResult(this->window);
 		} else if(this->state == GAME_ENDED) {
-			std::ostringstream text;
-			text << this->player.getName() << " has died with " << this->player.getScore() << std::endl <<
-			        "Press Return to quit";
-			GUI::Label label(sf::Vector2f(0, 0), text.str(), this->font);
-			this->window.clear();
-			this->window.draw(label);
-			this->window.display();
-			while(not sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
-			; // block execution
-			this->state = STOPPED;
+			this->handleEnd();
 		}
 	}
 
@@ -125,6 +106,25 @@ namespace prx
 	}
 
 	void
+	Game::handleMainMenu() {
+		this->state = this->start_menu.giveResult(this->window);
+		if(this->state == RUNNING) {
+			this->initPlayer();
+			const std::string filepath = this->map_choosing_menu.giveResult(this->window);
+			if(filepath.size() > 0) {
+				this->map.loadFromFile(filepath.c_str());
+				this->objects = this->map.getObjects();
+				if(this->database.getTotalScore(this->player) >= map.getNeededScore())
+					this->state = RUNNING;
+				else
+					this->state = STARTING;
+			} else {
+				this->state = STARTING;
+			}
+		}
+	}
+
+	void
 	Game::initPlayer() {
 		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name", "resources/font/arcade-classic.ttf", sf::Color::Yellow);
 		std::string name = name_box.giveAnswer(this->window);
@@ -134,6 +134,20 @@ namespace prx
 			this->database.createPlayer(this->player);
 		else
 			this->database.refreshPlayer(this->player);
+	}
+
+	void
+	Game::handleEnd() {
+		std::ostringstream text;
+		text << this->player.getName() << " has died with " << this->player.getScore() << std::endl <<
+		       "Press Return to quit";
+		GUI::Label label(sf::Vector2f(0, 0), text.str(), this->font);
+		this->window.clear();
+		this->window.draw(label);
+		this->window.display();
+		while(not sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+		; // block execution
+		this->state = STOPPED;
 	}
 
 	void

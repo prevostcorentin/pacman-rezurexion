@@ -21,6 +21,7 @@ namespace prx
 			bool hasObjectOfType(std::string _typename);
 			std::vector<Object*> getObjectsOfType(std::string _typename);
 			void erase(Object *o);
+			void clear();
 
 		private:
 			std::vector<Object*> objects;

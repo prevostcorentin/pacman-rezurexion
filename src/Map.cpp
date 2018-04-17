@@ -33,21 +33,24 @@ namespace prx
 	void
 	Map::loadFromFile(const char *filepath) {
 		std::ifstream fstream(filepath);
-		std::string dimensions;
-		std::getline(fstream, dimensions);
-		const std::size_t separator_position = dimensions.find_last_of(",");
-		this->width  = std::atoi(dimensions.substr(0, separator_position).c_str());
-		this->height = std::atoi(dimensions.substr(separator_position + 1).c_str());
-		std::string line;
-		std::vector<sf::Vector2f> corners;
+		std::string str;
+		std::getline(fstream, str);
+		// Get dimensions of the map
+		const std::size_t separator_position = str.find_last_of(",");
+		this->width  = std::atoi(str.substr(0, separator_position).c_str());
+		this->height = std::atoi(str.substr(separator_position + 1).c_str());
+		// Get needed score to play the map
+		std::getline(fstream, str);
+		this->score = std::atoi(str.c_str());
+		// Place objects on the map
 		for(int y=0; y < this->height; y++) {
-			std::getline(fstream, line);
+			std::getline(fstream, str);
 			for(int x=0; x < this->width; x++) {
-				if(line[x] == '*' or line[x] == 'G')
+				if(str[x] == '*' or str[x] == 'G')
 					this->objects->add(new PacGum(sf::Vector2f(x, y)));
-				else if(line[x] == '-' or line[x] == '|' or line[x] == '+') 
+				else if(str[x] == '-' or str[x] == '|' or str[x] == '+') 
 					this->objects->add(new Wall(sf::Vector2f(x, y)));
-				if(line[x] == 'G')
+				if(str[x] == 'G')
 					this->objects->add(new Ghost(sf::Vector2f(x, y)));
 			}
 		}
@@ -85,14 +88,19 @@ namespace prx
 		return objects_at_position;
 	}
 
+	const int
+	Map::getHeight() const {
+		return this->height;
+	}
+
 	ObjectCollection*
 	Map::getObjects() {
 		return this->objects;
 	}
 
 	const int
-	Map::getHeight() const {
-		return this->height;
+	Map::getNeededScore() {
+		return this->score;
 	}
 
 	const int
