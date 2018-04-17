@@ -114,6 +114,7 @@ namespace prx
 			if(filepath.size() > 0) {
 				this->map.loadFromFile(filepath.c_str());
 				this->objects = this->map.getObjects();
+				this->player.pacman->setPosition(sf::Vector2f(0, 0));
 				if(this->database.getTotalScore(this->player) >= map.getNeededScore())
 					this->state = RUNNING;
 				else
@@ -147,7 +148,9 @@ namespace prx
 		this->window.display();
 		while(not sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
 		; // block execution
-		this->state = STOPPED;
+		// sleep to avoid going to score menu because of return press in main menu
+		sf::sleep(sf::milliseconds(50));
+		this->state = STARTING;
 	}
 
 	void
