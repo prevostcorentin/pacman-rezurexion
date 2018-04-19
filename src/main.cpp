@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
 	sf::Font font;
 	sf::ContextSettings context;
-	if(not font.loadFromFile("resources/font/pac-font.ttf"))
+	if(not font.loadFromFile("resources/font/neuropol-x-free.ttf"))
 		prx::Logger::Send(prx::Logger::LEVEL::ERROR, "Can not load font");
 	context.depthBits = 24;
 	try {
