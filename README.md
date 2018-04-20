@@ -5,7 +5,7 @@ A more strategical implementation of Pacman
 #Clone
 
 ```
-git clone --recursive https://github.com/prevostcorentin/pacman-rezurexion
+git clone --recursive https://bitbucket.org/yodice/pacman-rezurexion
 ```
 
 #Compiling
