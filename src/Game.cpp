@@ -78,7 +78,7 @@ namespace prx
 
 	void
 	Game::turn() {
-		static enum DIRECTION pacman_direction=RIGHT;
+		enum DIRECTION pacman_direction=this->player.pacman->getDirection();
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			pacman_direction = DIRECTION::DOWN;
 		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
