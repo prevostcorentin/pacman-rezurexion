@@ -46,23 +46,17 @@ obj/%.o: src/%.cpp
 lib:
 	mkdir $@
 
-bin/Debug/$(EXECUTABLE): | bin/Debug
+bin/Debug/$(EXECUTABLE):
 	$(CXX) $(CXX_FLAGS) -g src/main.cpp -o $@ \
 		$(HEADERS_PATHS) \
 		$(STATIC_LIBS_SEARCH_PATHS) $(LIBS)
 
-bin/Debug:
-	mkdir -p $@
-
-bin/Release/$(EXECUTABLE): | bin/Release
+bin/Release/$(EXECUTABLE):
 	$(CXX) $(CXX_FLAGS) src/main.cpp -o $@ \
 		$(HEADERS_PATHS) \
 		$(RELEASE_LDFLAGS) $(STATIC_LIBS_SEARCH_PATHS) $(LIBS)
 
-bin/Release:
-	mkdir -p $@
-
-dependencies: SFML lib/libsqlite3.a
+dependencies: SFML extlibs/sqlite3/lib/libsqlite3.a
 
 extlibs/sqlite3/lib/libsqlite3.a: extlibs/sqlite3/obj extlibs/sqlite3/lib
 	$(CC) -c extlibs/sqlite3/sqlite3.c -o extlibs/sqlite3/obj/sqlite3.o
@@ -77,7 +71,8 @@ extlibs/sqlite3/lib:
 obj/extlibs/sqlite3/sqlite3.o:
 
 SFML:
-	cd extlibs/SFML; cmake -G$(CMAKE_MAKEFILE_TYPE); $(MAKE)
+	git submodule update --init extlibs/SFML
+	cd extlibs/SFML && cmake -G$(CMAKE_MAKEFILE_TYPE) && $(MAKE)
 
 clean:
 	rm obj/*.o
