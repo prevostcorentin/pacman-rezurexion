@@ -127,7 +127,7 @@ namespace prx
 
 	void
 	Game::initPlayer() {
-		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name", "resources/font/arcade-classic.ttf", sf::Color::Yellow);
+		GUI::InputTextBox name_box(sf::Vector2f(0, 0), "Player name", "resources/font/neuropol-x-free.ttf", sf::Color::Yellow);
 		std::string name = name_box.giveAnswer(this->window);
 
 		this->player.setName(name.c_str());

@@ -3,5 +3,4 @@ lib/
 obj/
 *.db
 *.dll
-*.exe
 *.iss

@@ -21,7 +21,7 @@ namespace prx
 					path << "resources/map/" << ent->d_name;
 					this->addEntry(ent->d_name, path.str());
 				}
-			closedir (dir);
+			closedir(dir);
 		} else {
 			Logger::Send(Logger::LEVEL::DEBUG, "Can not open \"resources/map\"");
 		}

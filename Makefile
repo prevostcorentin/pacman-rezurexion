@@ -68,8 +68,6 @@ extlibs/sqlite3/obj:
 extlibs/sqlite3/lib:
 	mkdir $@
 
-obj/extlibs/sqlite3/sqlite3.o:
-
 SFML:
 	git submodule update --init extlibs/SFML
 	cd extlibs/SFML && cmake -G$(CMAKE_MAKEFILE_TYPE) && $(MAKE)

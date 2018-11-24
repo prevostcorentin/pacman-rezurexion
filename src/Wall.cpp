@@ -7,7 +7,7 @@ namespace prx
 {
 
 
-	Wall::Wall(sf::Vector2f position) : Object("resources/textures/wall.bmp"),
+	Wall::Wall(sf::Vector2f position) : Object("resources/textures/wall.jpg"),
 	                                    RectangleShape(sf::Vector2f(32, 32))
 	{
 		this->setFillColor(sf::Color::Magenta);
